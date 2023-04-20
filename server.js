@@ -2,7 +2,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+
 const todoRoutes = require('./routes/todo');
+const actorRoutes = require('./routes/actor');
+const genreRoutes = require('./routes/genre');
+const filmRoutes = require('./routes/film');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,6 +25,15 @@ app.get('/', (req, res) => {
 
 // Routes "Todo"
 app.use('/api/todo', todoRoutes);
+
+// Routes "Todo"
+app.use('/api/actor', actorRoutes);
+
+// Routes "Todo"
+app.use('/api/genre', genreRoutes);
+
+// Routes "Todo"
+app.use('/api/film', filmRoutes);
 
 // Fallback route
 app.use((req, res) => {
