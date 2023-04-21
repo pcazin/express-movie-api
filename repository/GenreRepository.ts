@@ -1,7 +1,10 @@
-/* eslint-disable no-console */
-/* eslint-disable func-names */
-class TodoRepository {
-    constructor(database) {
+import sqlite3 from "sqlite3";
+
+export default class GenreRepository {
+
+    private database: sqlite3.Database;
+
+    constructor(database: sqlite3.Database) {
         this.database = database;
     }
 
@@ -20,7 +23,7 @@ class TodoRepository {
         });
     }
 
-    get(id) {
+    get(id: number) {
         return new Promise((resolve, reject) => {
             this.database.get('SELECT * FROM todo WHERE id = ?', [id], (err, row) => {
                 if (err) {
@@ -56,9 +59,9 @@ class TodoRepository {
         return new Promise((resolve, reject) => {
             this.database.run(
                 `UPDATE todo
-                 SET contents = ?,
-                     done = ?
-                 WHERE id = ?`,
+               SET contents = ?,
+                   done = ?
+               WHERE id = ?`,
                 [data.contents, data.done ? 1 : 0, id],
                 (err) => {
                     if (err) {
@@ -72,11 +75,11 @@ class TodoRepository {
         });
     }
 
-    delete(id) {
+    delete(id: number) {
         return new Promise((resolve, reject) => {
             this.database.run(
                 `DELETE FROM todo
-                 WHERE id = ?`,
+               WHERE id = ?`,
                 [id],
                 (err) => {
                     if (err) {
@@ -99,4 +102,4 @@ class TodoRepository {
     }
 }
 
-module.exports = TodoRepository;
+module.exports = GenreRepository;

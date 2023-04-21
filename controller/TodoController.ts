@@ -1,9 +1,10 @@
-const db = require('../database');
-const TodoRepository = require('../repository/TodoRepository');
+import db from "../database";
+import { Request, Response } from "express";
+import TodoRepository from "../repository/TodoRepository";
 
-exports.todo_list = (req, res) => {
-    const repo = new TodoRepository(db);
-    repo.list()
+exports.todo_list = (req: Request, res: Response) => {
+    new TodoRepository(db)
+        .list()
         .then((result) => {
             res.json({
                 success: true,
@@ -15,9 +16,9 @@ exports.todo_list = (req, res) => {
         });
 };
 
-exports.todo_get = (req, res) => {
-    const repo = new TodoRepository(db);
-    repo.get(req.params.id)
+exports.todo_get = (req: Request, res: Response) => {
+    new TodoRepository(db)
+        .get(req.params.id)
         .then((result) => {
             res.json({
                 success: true,
@@ -29,8 +30,8 @@ exports.todo_get = (req, res) => {
         });
 };
 
-exports.todo_create = (req, res) => {
-    const errors = [];
+exports.todo_create = (req: Request, res: Response) => {
+    const errors: String[] = [];
     ['contents', 'done'].forEach((field) => {
         if (!req.body[field]) {
             errors.push(`Field '${field}' is missing from request body`);
@@ -44,9 +45,7 @@ exports.todo_create = (req, res) => {
         return;
     }
 
-    const repo = new TodoRepository(db);
-
-    repo.create({
+    new TodoRepository(db).create({
         contents: req.body.contents,
         done: req.body.done === 'true',
     })
@@ -63,8 +62,8 @@ exports.todo_create = (req, res) => {
         });
 };
 
-exports.todo_update = (req, res) => {
-    const errors = [];
+exports.todo_update = (req: Request, res: Response) => {
+    const errors: String[] = [];
     ['contents', 'done'].forEach((field) => {
         if (!req.body[field]) {
             errors.push(`Field '${field}' is missing from request body`);
@@ -78,7 +77,7 @@ exports.todo_update = (req, res) => {
         return;
     }
 
-    const repo = new TodoRepository(db);
+    const repo: TodoRepository = new TodoRepository(db);
 
     repo.update(
         req.params.id,
@@ -101,10 +100,9 @@ exports.todo_update = (req, res) => {
         });
 };
 
-exports.todo_delete = (req, res) => {
-    const repo = new TodoRepository(db);
-
-    repo.delete(req.params.id)
+exports.todo_delete = (req: Request, res: Response) => {
+    new TodoRepository(db)
+        .delete(req.params.id)
         .then(() => {
             res.status(204)
                 .json({

@@ -20,7 +20,7 @@ export default class ActorRepository {
         });
     }
 
-    get(id) {
+    get(id: number) {
         return new Promise((resolve, reject) => {
             this.database.get(
                 "SELECT * FROM todo WHERE id = ?",
@@ -54,7 +54,7 @@ export default class ActorRepository {
         });
     }
 
-    update(id, data) {
+    update(id: number, data) {
         return new Promise((resolve, reject) => {
             this.database.run(
                 `UPDATE todo
@@ -74,7 +74,7 @@ export default class ActorRepository {
         });
     }
 
-    delete(id) {
+    delete(id: number) {
         return new Promise((resolve, reject) => {
             this.database.run(
                 `DELETE FROM todo

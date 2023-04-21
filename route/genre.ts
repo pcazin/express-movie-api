@@ -1,5 +1,8 @@
 import express, { Router } from 'express';
-const genreController = require('../controllers/GenreController');
+import genreController from '../controller/GenreController';
+
+//const genreController = require('../controllers/GenreController');
+
 
 const router = express.Router();
 
