@@ -1,7 +1,9 @@
-const express = require('express');
+
 const actorController = require('../controllers/ActorController');
 
-const router = express.Router();
+import express, { Router } from 'express';
+
+const router: Router = express.Router();
 
 router.get('/', actorController.actor_list);
 
@@ -13,4 +15,4 @@ router.put('/:id', actorController.actor_update);
 
 router.delete('/:id', actorController.actor_delete);
 
-module.exports = router;
+export default router;
