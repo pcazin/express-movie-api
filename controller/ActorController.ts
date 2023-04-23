@@ -1,9 +1,10 @@
-const db = require('../database');
-const FilmRepository = require('../repository/FilmRepository');
+import db from "../database";
+import { Request, Response } from "express";
+import ActorRepository from "../repository/ActorRepository";
 
-exports.film_list = (req, res) => {
-    const repo = new FilmRepository(db);
-    repo.list()
+exports.actor_list = (req: Request, res: Response) => {
+    new ActorRepository(db)
+        .list()
         .then((result) => {
             res.json({
                 success: true,
@@ -15,9 +16,8 @@ exports.film_list = (req, res) => {
         });
 };
 
-exports.film_get = (req, res) => {
-    const repo = new FilmRepository(db);
-    repo.get(req.params.id)
+exports.actor_get = (req: Request, res: Response) => {
+    new ActorRepository(db).get(req.params.id)
         .then((result) => {
             res.json({
                 success: true,
@@ -29,9 +29,9 @@ exports.film_get = (req, res) => {
         });
 };
 
-exports.film_create = (req, res) => {
-    const errors = [];
-    ['contents', 'done'].forEach((field) => {
+exports.actor_create = (req: Request, res: Response) => {
+    const errors: String[] = [];
+    ["contents", "done"].forEach((field) => {
         if (!req.body[field]) {
             errors.push(`Field '${field}' is missing from request body`);
         }
@@ -44,28 +44,24 @@ exports.film_create = (req, res) => {
         return;
     }
 
-    const repo = new FilmRepository(db);
-
-    repo.create({
+    new ActorRepository(db).create({
         contents: req.body.contents,
-        done: req.body.done === 'true',
+        done: req.body.done === "true",
     })
         .then((result) => {
-            res
-                .status(201)
-                .json({
-                    success: true,
-                    id: result,
-                });
+            res.status(201).json({
+                success: true,
+                id: result,
+            });
         })
         .catch((err) => {
             res.status(400).json({ error: err.message });
         });
 };
 
-exports.film_update = (req, res) => {
-    const errors = [];
-    ['contents', 'done'].forEach((field) => {
+exports.actor_update = (req: Request, res: Response) => {
+    const errors: String[] = [];
+    ["contents", "done"].forEach((field) => {
         if (!req.body[field]) {
             errors.push(`Field '${field}' is missing from request body`);
         }
@@ -78,38 +74,32 @@ exports.film_update = (req, res) => {
         return;
     }
 
-    const repo = new FilmRepository(db);
+    const repo: ActorRepository = new ActorRepository(db);
 
-    repo.update(
-        req.params.id,
-        {
-            contents: req.body.contents,
-            done: req.body.done === 'true',
-        },
-    )
+    repo.update(req.params.id, {
+        contents: req.body.contents,
+        done: req.body.done === "true",
+    })
         .then(() => {
-            repo.get(req.params.id)
-                .then((result) => {
-                    res.json({
-                        success: true,
-                        data: result,
-                    });
+            repo.get(req.params.id).then((result) => {
+                res.json({
+                    success: true,
+                    data: result,
                 });
+            });
         })
         .catch((err) => {
             res.status(400).json({ error: err.message });
         });
 };
 
-exports.film_delete = (req, res) => {
-    const repo = new FilmRepository(db);
+exports.actor_delete = (req: Request, res: Response) => {
 
-    repo.delete(req.params.id)
+    new ActorRepository(db).delete(req.params.id)
         .then(() => {
-            res.status(204)
-                .json({
-                    success: true,
-                });
+            res.status(204).json({
+                success: true,
+            });
         })
         .catch((err) => {
             res.status(400).json({ error: err.message });

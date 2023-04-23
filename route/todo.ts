@@ -1,4 +1,4 @@
-const express = require('express');
+import express, { Router } from 'express';
 const todoController = require('../controllers/TodoController');
 
 const router = express.Router();
@@ -9,4 +9,4 @@ router.post('/', todoController.todo_create);
 router.put('/:id', todoController.todo_update);
 router.delete('/:id', todoController.todo_delete);
 
-module.exports = router;
+export default router;
