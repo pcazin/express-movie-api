@@ -1,4 +1,4 @@
-import db from "../database";
+import db from "../database/database";
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
 
