@@ -1,4 +1,3 @@
-
 const actorController = require('../controllers/ActorController');
 
 import express, { Router } from 'express';

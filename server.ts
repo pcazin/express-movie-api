@@ -5,7 +5,6 @@ import todoRoutes from './route/todo';
 import genreRoutes from './route/genre';
 import filmRoutes from './route/film';
 
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

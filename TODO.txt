@@ -1,0 +1,6 @@
+- Comprendre comment éxecuter create_db file.
+- S'assurer que les bonnes méthodes sont ajoutées dans les controllers et repos.
+- Remplacer les requetes du repo par des appels a prisma.
+- Intégrer les API Key.
+- Intégrer les E-gate pour empécher la modification d'une même donnée par deux users.
+- Créer le jeu de requetes postman.

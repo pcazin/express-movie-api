@@ -3,8 +3,3 @@ export type Genre = {
     name: string
 }
 
-/* CREATE TABLE 'genres' (
-    'id' INTEGER PRIMARY KEY AUTOINCREMENT,
-    'name' varchar(255) NOT NULL
-  ); */
-
