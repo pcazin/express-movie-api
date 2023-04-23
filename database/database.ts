@@ -1,14 +1,19 @@
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
 
-const DBSOURCE = 'db.sqlite';
+const DBSOURCE = "db.sqlite";
 
-const db: sqlite3.Database = new sqlite3.Database(DBSOURCE, (errConnect: Error | null) => {
-  if (errConnect) {
-    // Cannot open database
-    console.error(errConnect.message);
-    throw errConnect;
-  } else {
-    console.log('Connected to the SQLite database.');
+const db: sqlite3.Database = new sqlite3.Database(
+  DBSOURCE,
+  (errConnect: Error | null) => {
+    
+    // erreur de connexion
+    if (errConnect) {
+      // Cannot open database
+      console.error(errConnect.message);
+      throw errConnect;
+    }
+
+    console.log("Connected to the SQLite database.");
     db.run(
       `CREATE TABLE IF NOT EXISTS 'genres' (
         'id' INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,18 +46,18 @@ const db: sqlite3.Database = new sqlite3.Database(DBSOURCE, (errConnect: Error |
       (errQuery) => {
         if (errQuery) {
           // Table already created
-          console.log("tables already created.")
+          console.log("tables already created.");
         } else {
           // Table just created, creating some rows
-          console.log("tables created.")
+          console.log("tables created.");
           /* const insert = 'INSERT INTO todo (contents, done) VALUES (?,?)';
           db.run(insert, ['Acheter des bières', 0]);
           db.run(insert, ['Tondre le jardin', 0]);
           db.run(insert, ['Nettoyer le barbecue', 1]); */
         }
-      },
+      }
     );
   }
-});
+);
 
 export default db;

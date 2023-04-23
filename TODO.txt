@@ -1,4 +1,4 @@
-- Comprendre comment éxecuter create_db file.
+- Comprendre comment éxecuter create_db file.                                          V
 - S'assurer que les bonnes méthodes sont ajoutées dans les controllers et repos.
 - Remplacer les requetes du repo par des appels a prisma.
 - Intégrer les API Key.

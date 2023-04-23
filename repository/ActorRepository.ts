@@ -1,103 +1,114 @@
 import sqlite3 from "sqlite3";
+import { Actor } from "../types/repository/Actor";
 
 export default class ActorRepository {
-    private database: sqlite3.Database;
 
-    constructor(database: sqlite3.Database) {
-        this.database = database;
-    }
+  private database: sqlite3.Database;
 
-    list() {
-        return new Promise((resolve, reject) => {
-            this.database.all("SELECT * FROM todo", [], (err, rows) => {
-                if (err) {
-                    console.error(err.message);
-                    reject(err);
-                } else {
-                    resolve(rows.map((row) => this.decorator(row)));
-                }
-            });
-        });
-    }
+  constructor(database: sqlite3.Database) {
+    this.database = database;
+  }
 
-    get(id: number) {
-        return new Promise((resolve, reject) => {
-            this.database.get(
-                "SELECT * FROM todo WHERE id = ?",
-                [id],
-                (err, row) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(this.decorator(row));
-                    }
-                }
-            );
-        });
-    }
+  list(): Promise<Actor[]> {
+    return new Promise((resolve, reject) => {
+      this.database.all("SELECT * FROM actors", [], (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  }
 
-    create(data) {
-        return new Promise((resolve, reject) => {
-            this.database.run(
-                "INSERT INTO todo (contents, done) VALUES (?,?)",
-                [data.contents, data.done ? 1 : 0],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(this.lastID);
-                    }
-                }
-            );
-        });
-    }
+  get(id: number): Promise<Actor> {
+    return new Promise((resolve, reject) => {
+      this.database.get(
+        "SELECT * FROM actors WHERE id = ?",
+        [id],
+        (err, row) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            resolve(row);
+          }
+        }
+      );
+    });
+  }
 
-    update(id: number, data) {
-        return new Promise((resolve, reject) => {
-            this.database.run(
-                `UPDATE todo
-               SET contents = ?,
-                   done = ?
+  create(actor: Actor): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.database.run(
+        "INSERT INTO actors (first_name, last_name, date_of_birth, date_of_death) VALUES (?,?,?,?)",
+        [
+          actor.first_name,
+          actor.last_name,
+          actor.date_of_birth,
+          actor.date_of_death,
+        ],
+        function (err) {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            resolve(this.lastID);
+          }
+        }
+      );
+    });
+  }
+
+  update(actor: Actor): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.database.run(
+        `UPDATE actors
+            SET
+                first_name = ?,
+                last_name = ?,
+                date_of_birth = ?,
+                date_of_death = ?
+                WHERE id = ?`,
+        [
+          actor.first_name,
+          actor.last_name,
+          actor.date_of_birth,
+          actor.date_of_death,
+          actor.id,
+        ],
+        (err) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            resolve(true);
+          }
+        }
+      );
+    });
+  }
+
+  delete(id: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.database.run(
+        `DELETE FROM actors
                WHERE id = ?`,
-                [data.contents, data.done ? 1 : 0, id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                }
-            );
-        });
-    }
-
-    delete(id: number) {
-        return new Promise((resolve, reject) => {
-            this.database.run(
-                `DELETE FROM todo
-               WHERE id = ?`,
-                [id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(true);
-                    }
-                }
-            );
-        });
-    }
-
-    decorator(todo) {
-        return {
-            ...todo,
-            done: todo.done === 1,
-        };
-    }
+        [id],
+        (err) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            resolve(true);
+          }
+        }
+      );
+    });
+  }
 }
 
-module.exports = ActorRepository;
+
+
+

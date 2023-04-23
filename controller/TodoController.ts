@@ -18,7 +18,7 @@ exports.todo_list = (req: Request, res: Response) => {
 
 exports.todo_get = (req: Request, res: Response) => {
     new TodoRepository(db)
-        .get(req.params.id)
+        .get(Number(req.params.id))
         .then((result) => {
             res.json({
                 success: true,
@@ -80,14 +80,14 @@ exports.todo_update = (req: Request, res: Response) => {
     const repo: TodoRepository = new TodoRepository(db);
 
     repo.update(
-        req.params.id,
+        Number(req.params.id),
         {
             contents: req.body.contents,
             done: req.body.done === 'true',
         },
     )
         .then(() => {
-            repo.get(req.params.id)
+            repo.get(Number(req.params.id))
                 .then((result) => {
                     res.json({
                         success: true,
@@ -102,7 +102,7 @@ exports.todo_update = (req: Request, res: Response) => {
 
 exports.todo_delete = (req: Request, res: Response) => {
     new TodoRepository(db)
-        .delete(req.params.id)
+        .delete(Number(req.params.id))
         .then(() => {
             res.status(204)
                 .json({
@@ -113,3 +113,4 @@ exports.todo_delete = (req: Request, res: Response) => {
             res.status(400).json({ error: err.message });
         });
 };
+

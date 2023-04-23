@@ -1,13 +1,15 @@
 import express, { Router } from 'express';
-import genreController from '../controller/GenreController';
+import { genre_list, genre_create, genre_delete } from '../controller/GenreController';
 
-//const genreController = require('../controllers/GenreController');
+const router: Router = express.Router();
 
-
-const router = express.Router();
-
-router.get('/', genreController.genre_list);
-router.post('/', genreController.genre_create);
-router.delete('/:id', genreController.genre_delete);
+router.get('/', genre_list);
+router.post('/', genre_create);
+router.delete('/:id', genre_delete);
 
 export default router;
+
+// ● GET /genre : retourne la liste des genres
+// ● POST /genre : crée le genre selon les informations du corps de la requête
+// ● DELETE /genre/{id} : supprime le genre (sauf si utilisé dans un ou plusieurs
+// films)
