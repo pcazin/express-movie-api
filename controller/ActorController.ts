@@ -1,8 +1,9 @@
 import db from "../database/database";
 import { Request, Response } from "express";
 import ActorRepository from "../repository/ActorRepository";
+import { Actor } from "../types/repository/Actor";
 
-const actor_list = (req: Request, res: Response) => {
+const get_actor_list = (req: Request, res: Response) => {
   new ActorRepository(db)
     .list()
     .then((result) => {
@@ -16,7 +17,7 @@ const actor_list = (req: Request, res: Response) => {
     });
 };
 
-const actor_get = (req: Request, res: Response) => {
+const get_actor = (req: Request, res: Response) => {
   new ActorRepository(db)
     .get(Number(req.params.id))
     .then((result) => {
@@ -30,26 +31,33 @@ const actor_get = (req: Request, res: Response) => {
     });
 };
 
-const actor_create = (req: Request, res: Response) => {
+const create_actor = (req: Request, res: Response) => {
+
   const errors: String[] = [];
-  ["contents", "done"].forEach((field) => {
-    if (!req.body[field]) {
+
+  ["first_name", "last_name", "date_of_birth", "date_of_death"].forEach((field) => {
+    if (!req.body[field] && field != "date_of_death") {
       errors.push(`Field '${field}' is missing from request body`);
     }
   });
+
   if (errors.length) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       errors,
     });
     return;
   }
 
+  const newActor: Actor =  {
+    first_name: req.body["first_name"],
+    last_name: req.body["last_name"],
+    date_of_birth: new Date(req.body["date_of_birth"]),
+    date_of_death: req.body["date_of_death"] ? new Date(req.body["date_of_death"]) : null
+  }
+
   new ActorRepository(db)
-    .create({
-      contents: req.body.contents,
-      done: req.body.done === "true",
-    })
+    .create(newActor)
     .then((result) => {
       res.status(201).json({
         success: true,
@@ -57,14 +65,14 @@ const actor_create = (req: Request, res: Response) => {
       });
     })
     .catch((err) => {
-      res.status(400).json({ error: err.message });
+      res.status(500).json({ error: err.message });
     });
 };
 
-const actor_update = (req: Request, res: Response) => {
+const update_actor = (req: Request, res: Response) => {
   const errors: String[] = [];
-  ["contents", "done"].forEach((field) => {
-    if (!req.body[field]) {
+  ["first_name", "last_name", "date_of_birth", "date_of_death"].forEach((field) => {
+    if (!req.body[field] && field != "date_of_death") {
       errors.push(`Field '${field}' is missing from request body`);
     }
   });
@@ -76,27 +84,28 @@ const actor_update = (req: Request, res: Response) => {
     return;
   }
 
+  const updatedActor: Actor =  {
+    first_name: req.params.first_name,
+    last_name: req.params.last_name,
+    date_of_birth: new Date(req.params.date_of_birth),
+    date_of_death: new Date(req.params.date_of_death)
+  }
+
   const repo: ActorRepository = new ActorRepository(db);
 
   repo
-    .update(Number(req.params.id), {
-      contents: req.body.contents,
-      done: req.body.done === "true",
-    })
-    .then(() => {
-      repo.get(Number(req.params.id)).then((result) => {
-        res.json({
-          success: true,
-          data: result,
-        });
+    .update(updatedActor)
+    .then((result) => {
+      res.json({
+        success: result
       });
     })
     .catch((err) => {
-      res.status(400).json({ error: err.message });
+      res.status(500).json({ error: err.message });
     });
 };
 
-const actor_delete = (req: Request, res: Response) => {
+const delete_actor = (req: Request, res: Response) => {
   new ActorRepository(db)
     .delete(Number(req.params.id))
     .then(() => {
@@ -109,5 +118,5 @@ const actor_delete = (req: Request, res: Response) => {
     });
 };
 
-export { actor_list, actor_get, actor_create, actor_update, actor_delete };
+export { get_actor_list, get_actor, create_actor, update_actor, delete_actor };
 

@@ -4,3 +4,4 @@
 - Intégrer les API Key.
 - Intégrer les E-gate pour empécher la modification d'une même donnée par deux users.
 - Créer le jeu de requetes postman.
+- verifier que les codes de retours corresponndent bien a la situation.
