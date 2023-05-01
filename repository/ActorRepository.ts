@@ -1,114 +1,72 @@
 import sqlite3 from "sqlite3";
 import { Actor } from "../types/repository/Actor";
+import { PrismaClient, PrismaPromise } from "@prisma/client";
+import { resolve } from "path";
+import { rejects } from "assert";
+
+const prisma = new PrismaClient();
 
 export default class ActorRepository {
+    private database: sqlite3.Database;
 
-  private database: sqlite3.Database;
+    constructor(database: sqlite3.Database) {
+        this.database = database;
+    }
 
-  constructor(database: sqlite3.Database) {
-    this.database = database;
-  }
-
-  list(): Promise<Actor[]> {
-    return new Promise((resolve, reject) => {
-      this.database.all("SELECT * FROM actors", [], (err, rows) => {
-        if (err) {
-          console.error(err.message);
-          reject(err);
-        } else {
-          resolve(rows);
+    async list(): Promise<Actor[] | Error> {
+        try {
+            const actors: Actor[] = await prisma.actor.findMany();
+            return actors;
+        } catch (err) {
+            return new Error("Error: list() method in ActorRepository failed.");
         }
-      });
-    });
-  }
+    }
 
-  get(id: number): Promise<Actor> {
-    return new Promise((resolve, reject) => {
-      this.database.get(
-        "SELECT * FROM actors WHERE id = ?",
-        [id],
-        (err, row) => {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-          } else {
-            resolve(row);
-          }
-        }
-      );
-    });
-  }
+    async get(id: number): Promise<Actor | Error> {
+        try {
+            const actor: Actor | null = await prisma.actor.findUnique({ where: { id } });
 
-  create(actor: Actor): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this.database.run(
-        "INSERT INTO actors (first_name, last_name, date_of_birth, date_of_death) VALUES (?,?,?,?)",
-        [
-          actor.first_name,
-          actor.last_name,
-          actor.date_of_birth,
-          actor.date_of_death,
-        ],
-        function (err) {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-          } else {
-            resolve(this.lastID);
-          }
-        }
-      );
-    });
-  }
+            if (!actor) {
+                return new Error(
+                    "Error: get() method in ActorRepository failed."
+                );
+            }
 
-  update(actor: Actor): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.database.run(
-        `UPDATE actors
-            SET
-                first_name = ?,
-                last_name = ?,
-                date_of_birth = ?,
-                date_of_death = ?
-                WHERE id = ?`,
-        [
-          actor.first_name,
-          actor.last_name,
-          actor.date_of_birth,
-          actor.date_of_death,
-          actor.id,
-        ],
-        (err) => {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-          } else {
-            resolve(true);
-          }
+            return actor;
+        } catch (err) {
+            return new Error("Error: get() method in ActorRepository failed.");
         }
-      );
-    });
-  }
+    }
 
-  delete(id: number): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.database.run(
-        `DELETE FROM actors
-               WHERE id = ?`,
-        [id],
-        (err) => {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-          } else {
-            resolve(true);
-          }
-        }
-      );
-    });
-  }
+    async create(actor: Actor): Promise<Actor | Error> {
+      try {
+        const newActor: Actor = await prisma.actor.create({data: actor})
+        return newActor;
+      } catch(err) {
+        return new Error("Error: create() method in ActorRepository failed.");
+      }
+    }
+
+    async update(actor: Actor): Promise<Actor | Error> {
+      try {
+        const updatedActor: Actor = await prisma.actor.update({
+          where: { id: actor.id },
+          data: actor
+        })
+        return updatedActor;
+      } catch(err) {
+        return new Error("Error: update() method in ActorRepository failed.");
+      }
+    }
+
+    async delete(id: number): Promise<Actor | Error> {
+      try {
+        const deletedActor: Actor = await prisma.actor.delete({
+          where: { id }
+        })
+        return deletedActor;
+      } catch(err) {
+        return new Error("Error: delete() method in ActorRepository failed.");
+      }
+    }
 }
-
-
-
-
