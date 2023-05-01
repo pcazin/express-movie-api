@@ -1,5 +1,5 @@
-import { Actor } from "../types/repository/Actor";
-import { PrismaClient } from "@prisma/client";
+
+import { Actor, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
