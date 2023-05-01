@@ -18,7 +18,7 @@ const film_list = (req: Request, res: Response) => {
 
 const film_get = (req: Request, res: Response) => {
   new FilmRepository(db)
-    .get(Number(req.params.id))
+    .get()
     .then((result) => {
       res.json({
         success: true,
@@ -46,10 +46,7 @@ const film_create = (req: Request, res: Response) => {
   }
 
   new FilmRepository(db)
-    .create({
-      contents: req.body.contents,
-      done: req.body.done === "true",
-    })
+    .create()
     .then((result) => {
       res.status(201).json({
         success: true,
@@ -79,12 +76,9 @@ const film_update = (req: Request, res: Response) => {
   const repo: FilmRepository = new FilmRepository(db);
 
   repo
-    .update(Number(req.params.id), {
-      contents: req.body.contents,
-      done: req.body.done === "true",
-    })
+    .update()
     .then(() => {
-      repo.get(Number(req.params.id)).then((result) => {
+      repo.get().then((result) => {
         res.json({
           success: true,
           data: result,
@@ -100,7 +94,7 @@ const film_delete = (req: Request, res: Response) => {
   const repo = new FilmRepository(db);
 
   repo
-    .delete(Number(req.params.id))
+    .delete()
     .then(() => {
       res.status(204).json({
         success: true,

@@ -10,95 +10,32 @@ export default class FilmRepository {
 
     list() {
         return new Promise((resolve, reject) => {
-            this.database.all('SELECT * FROM todo', [], (err, rows) => {
-                if (err) {
-                    console.error(err.message);
-                    reject(err);
-                } else {
-                    resolve(
-                        rows.map((row) => this.decorator(row)),
-                    );
-                }
-            });
+            resolve(true)
         });
     }
 
-    get(id: number) {
+    get() {
         return new Promise((resolve, reject) => {
-            this.database.get('SELECT * FROM todo WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    console.error(err.message);
-                    reject(err);
-                } else {
-                    resolve(
-                        this.decorator(row),
-                    );
-                }
-            });
+            resolve(true)
         });
     }
 
-    create(data) {
+    create() {
         return new Promise((resolve, reject) => {
-            this.database.run(
-                'INSERT INTO todo (contents, done) VALUES (?,?)',
-                [data.contents, data.done ? 1 : 0],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(this.lastID);
-                    }
-                },
-            );
+            resolve(true)
         });
     }
 
-    update(id: number, data) {
+    update() {
         return new Promise((resolve, reject) => {
-            this.database.run(
-                `UPDATE todo
-               SET contents = ?,
-                   done = ?
-               WHERE id = ?`,
-                [data.contents, data.done ? 1 : 0, id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                },
-            );
+            resolve(true)
         });
     }
 
-    delete(id: number) {
+    delete() {
         return new Promise((resolve, reject) => {
-            this.database.run(
-                `DELETE FROM todo
-               WHERE id = ?`,
-                [id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(true);
-                    }
-                },
-            );
+            resolve(true)
         });
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    decorator(todo) {
-        return {
-            ...todo,
-            done: todo.done === 1,
-        };
     }
 }
 

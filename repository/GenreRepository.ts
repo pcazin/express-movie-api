@@ -1,4 +1,5 @@
 import sqlite3 from "sqlite3";
+import { Genre } from "../types/repository/Genre";
 
 export default class GenreRepository {
 
@@ -8,7 +9,7 @@ export default class GenreRepository {
         this.database = database;
     }
 
-    list() {
+    list(): Promise<Genre[]> {
         return new Promise((resolve, reject) => {
             this.database.all('SELECT * FROM todo', [], (err, rows) => {
                 if (err) {
@@ -16,14 +17,15 @@ export default class GenreRepository {
                     reject(err);
                 } else {
                     resolve(
-                        rows.map((row) => this.decorator(row)),
+                        // rows.map((row) => this.decorator(row)),
+                        rows
                     );
                 }
             });
         });
     }
 
-    get(id: number) {
+    get(id: number): Promise<Genre> {
         return new Promise((resolve, reject) => {
             this.database.get('SELECT * FROM todo WHERE id = ?', [id], (err, row) => {
                 if (err) {
@@ -31,15 +33,16 @@ export default class GenreRepository {
                     reject(err);
                 } else {
                     resolve(
-                        this.decorator(row),
+                        // this.decorator(row),
+                        row
                     );
                 }
             });
         });
     }
 
-    create(data) {
-        return new Promise((resolve, reject) => {
+    create(data: Genre): Promise<boolean> {
+        /* return new Promise((resolve, reject) => {
             this.database.run(
                 'INSERT INTO todo (contents, done) VALUES (?,?)',
                 [data.contents, data.done ? 1 : 0],
@@ -52,11 +55,14 @@ export default class GenreRepository {
                     }
                 },
             );
-        });
+        }); */
+        return new Promise((resolve, reject) => {
+            resolve(true);
+        })
     }
 
-    update(id, data) {
-        return new Promise((resolve, reject) => {
+    update(data: Genre) {
+        /* return new Promise((resolve, reject) => {
             this.database.run(
                 `UPDATE todo
                SET contents = ?,
@@ -72,7 +78,7 @@ export default class GenreRepository {
                     }
                 },
             );
-        });
+        }); */
     }
 
     delete(id: number) {
@@ -94,12 +100,12 @@ export default class GenreRepository {
     }
 
     // eslint-disable-next-line class-methods-use-this
-    decorator(todo) {
+    /* decorator(todo) {
         return {
             ...todo,
             done: todo.done === 1,
         };
-    }
+    } */
 }
 
 module.exports = GenreRepository;

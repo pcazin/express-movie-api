@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database.sqlite"
+}
+
+model Genre {
+  id    Int     @id @default(autoincrement())
+  name  String
+  films Film[]
+}
+
+model Actor {
+  id            Int      @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  date_of_birth DateTime
+  date_of_death DateTime?
+  filmActors    FilmActor[]
+}
+
+model Film {
+  id            Int      @id @default(autoincrement())
+  name          String
+  synopsis      String
+  release_year  Int?
+  genre         Genre    @relation(fields: [genre_id], references: [id])
+  genre_id      Int
+  filmActors    FilmActor[]
+}
+
+model FilmActor {
+  film    Film @relation(fields: [filmId], references: [id])
+  filmId Int
+  actor   Actor @relation(fields: [actorId], references: [id])
+  actorId Int
+  @@id([filmId, actorId])
+}

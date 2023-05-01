@@ -1,6 +1,7 @@
-import db from "../database/database";
-import { Request, Response } from "express";
 import GenreRepository from "../repository/GenreRepository";
+import { Genre } from "../types/repository/Genre";
+import { Request, Response } from "express";
+import db from "../database/database";
 
 const genre_list = (req: Request, res: Response) => {
   new GenreRepository(db)
@@ -31,11 +32,12 @@ const genre_create = (req: Request, res: Response) => {
     return;
   }
 
+  const newGenre: Genre = {
+    name: req.body.name,
+  }
+
   new GenreRepository(db)
-    .create({
-      contents: req.body.contents,
-      done: req.body.done === "true",
-    })
+    .create(newGenre)
     .then((result) => {
       res.status(201).json({
         success: true,
@@ -62,7 +64,3 @@ const genre_delete = (req: Request, res: Response) => {
 
 export { genre_list, genre_create, genre_delete };
 
-// ● GET /genre : retourne la liste des genres
-// ● POST /genre : crée le genre selon les informations du corps de la requête
-// ● DELETE /genre/{id} : supprime le genre (sauf si utilisé dans un ou plusieurs
-// films)
