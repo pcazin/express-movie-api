@@ -1,108 +1,97 @@
-import db from "../database/database";
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
+import { FilmPayload } from "../types/Film";
+
+const repo: FilmRepository = new FilmRepository();
 
 const film_list = (req: Request, res: Response) => {
-  new FilmRepository(db)
-    .list()
-    .then((result) => {
-      res.json({
-        success: true,
-        data: result,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({ error: err.message });
-    });
+    repo.list()
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => {
+            res.status(500).json({ error: err.message });
+        });
 };
 
 const film_get = (req: Request, res: Response) => {
-  new FilmRepository(db)
-    .get()
-    .then((result) => {
-      res.json({
-        success: true,
-        data: result,
-      });
-    })
-    .catch((err) => {
-      res.status(404).json({ error: err.message });
-    });
+    repo.get(Number(req.params.id))
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => {
+            res.status(404).json({ error: err.message });
+        });
 };
 
 const film_create = (req: Request, res: Response) => {
-  const errors: String[] = [];
-  ["contents", "done"].forEach((field) => {
-    if (!req.body[field]) {
-      errors.push(`Field '${field}' is missing from request body`);
-    }
-  });
-  if (errors.length) {
-    res.status(400).json({
-      success: false,
-      errors,
+    const errors: String[] = [];
+    ["name", "synopsis", "release_year", "genre_id"].forEach((field) => {
+        if (!req.body[field]) {
+            errors.push(`Field '${field}' is missing from request body`);
+        }
     });
-    return;
-  }
 
-  new FilmRepository(db)
-    .create()
-    .then((result) => {
-      res.status(201).json({
-        success: true,
-        id: result,
-      });
-    })
-    .catch((err) => {
-      res.status(400).json({ error: err.message });
-    });
+    if (errors.length) {
+        res.status(400).json(errors);
+        return;
+    }
+
+    const newFilm: FilmPayload = {
+        name: req.body["name"],
+        synopsis: req.body["synopsis"],
+        release_year: Number(req.body["release_year"]),
+        genre_id: Number(req.body["genre_id"]),
+    };
+
+    repo.create(newFilm)
+        .then((result) => {
+            res.status(201).json(result);
+        })
+        .catch((err) => {
+            res.status(500).json({ error: err.message });
+        });
 };
 
 const film_update = (req: Request, res: Response) => {
-  const errors: String[] = [];
-  ["contents", "done"].forEach((field) => {
-    if (!req.body[field]) {
-      errors.push(`Field '${field}' is missing from request body`);
+    const errors: String[] = [];
+    ["name", "synopsis", "release_year", "genre_id"].forEach((field) => {
+        if (!req.body[field]) {
+            errors.push(`Field '${field}' is missing from request body`);
+        }
+    });
+    if (errors.length) {
+        res.status(400).json(errors);
+        return;
     }
-  });
-  if (errors.length) {
-    res.status(400).json({
-      success: false,
-      errors,
-    });
-    return;
-  }
 
-  const repo: FilmRepository = new FilmRepository(db);
+    const updatedFilm: FilmPayload = {
+        id: Number(req.params.id),
+        name: req.body["name"],
+        synopsis: req.body["synopsis"],
+        release_year: Number(req.body["release_year"]),
+        genre_id: Number(req.body["genre_id"]),
+    };
 
-  repo
-    .update()
-    .then(() => {
-      repo.get().then((result) => {
-        res.json({
-          success: true,
-          data: result,
+    repo.update(updatedFilm)
+        .then((result) => {
+            res.status(200).json(result);
+        })
+        .catch((err) => {
+            res.status(400).json({ error: err.message });
         });
-      });
-    })
-    .catch((err) => {
-      res.status(400).json({ error: err.message });
-    });
 };
 
 const film_delete = (req: Request, res: Response) => {
-  const repo = new FilmRepository(db);
-
-  repo
-    .delete()
-    .then(() => {
-      res.status(204).json({
-        success: true,
-      });
-    })
-    .catch((err) => {
-      res.status(400).json({ error: err.message });
-    });
+    repo.delete(Number(req.params.id))
+        .then(() => {
+            res.status(204).json({
+                success: true,
+            });
+        })
+        .catch((err) => {
+            res.status(400).json({ error: err.message });
+        });
 };
 
 export { film_list, film_get, film_create, film_update, film_delete };

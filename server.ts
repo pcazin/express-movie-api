@@ -1,4 +1,4 @@
-import express, {Express, Request, Response} from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import actorRoutes from './route/actor';
 import genreRoutes from './route/genre';
@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const HTTP_PORT = 8000;
+const HTTP_PORT = process.env.PORT || 8000;
 
 app.listen(HTTP_PORT, () => {
     console.log(`Server running on port ${HTTP_PORT}`);
@@ -33,6 +33,6 @@ app.use('/api/genre', genreRoutes);
 app.use('/api/film', filmRoutes);
 
 // Fallback route
-app.use((req, res) => {
+app.use((_req, res) => {
     res.status(404);
 });

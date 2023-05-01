@@ -1,4 +1,4 @@
-export type Film = {
+export type FilmPayload = {
     id?: number,
     name: string,
     synopsis: string,

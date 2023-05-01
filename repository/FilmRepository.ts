@@ -1,4 +1,5 @@
 import { Film, PrismaClient } from "@prisma/client";
+import { FilmPayload } from "../types/Film";
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,7 @@ export default class FilmRepository {
         }
     }
 
-    async create(newFilm: Film): Promise<Film | Error> {
+    async create(newFilm: FilmPayload): Promise<Film | Error> {
         try {
             const film: Film = await prisma.film.create({
                 data: newFilm,
@@ -48,7 +49,7 @@ export default class FilmRepository {
         }
     }
 
-    async update(film: Film): Promise<Film | Error> {
+    async update(film: FilmPayload): Promise<Film | Error> {
         try {
             const updatedFilm: Film = await prisma.film.update({
                 where: { id: film.id },

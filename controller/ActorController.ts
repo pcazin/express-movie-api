@@ -38,10 +38,7 @@ const create_actor = (req: Request, res: Response) => {
     );
 
     if (errors.length) {
-        res.status(500).json({
-            success: false,
-            errors,
-        });
+        res.status(500).json(errors);
         return;
     }
 
@@ -81,13 +78,12 @@ const update_actor = (req: Request, res: Response) => {
     }
 
     const updatedActor: ActorPayload = {
+        id: Number(req.params.id),
         first_name: req.params.first_name,
         last_name: req.params.last_name,
         date_of_birth: new Date(req.params.date_of_birth),
         date_of_death: new Date(req.params.date_of_death),
     };
-
-    const repo: ActorRepository = new ActorRepository();
 
     repo.update(updatedActor)
         .then((result) => {
