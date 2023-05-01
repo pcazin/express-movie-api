@@ -4,8 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.ts && npx prisma db push",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prisma": {
+      "seed": "ts-node prisma/seed.ts"
+    } 
   },
   "repository": {
     "type": "git",
