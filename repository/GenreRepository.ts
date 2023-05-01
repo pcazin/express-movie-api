@@ -1,4 +1,5 @@
 import { Genre, PrismaClient } from "@prisma/client";
+import { GenrePayLoad } from "../types/Genre";
 
 const prisma = new PrismaClient();
 
@@ -34,7 +35,7 @@ export default class GenreRepository {
         }
     }
 
-    async create(newGenre: Genre): Promise<Genre | Error> {
+    async create(newGenre: GenrePayLoad): Promise<Genre | Error> {
         try {
             const genre: Genre = await prisma.genre.create({ data: newGenre });
             return genre;

@@ -1,4 +1,4 @@
-export type Genre = {
+export type GenrePayLoad = {
     id?: number,
     name: string
 }
