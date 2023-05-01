@@ -1,5 +1,5 @@
 import GenreRepository from "../repository/GenreRepository";
-import { Genre } from "../types/repository/Genre";
+import { Genre } from "../types/Genre";
 import { Request, Response } from "express";
 import db from "../database/database";
 

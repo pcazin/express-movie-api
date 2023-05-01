@@ -1,4 +1,4 @@
-export type Actor = {
+export type ActorPayload = {
     id?: number,
     first_name: string,
     last_name: string,

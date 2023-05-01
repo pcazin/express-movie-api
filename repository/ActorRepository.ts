@@ -1,5 +1,6 @@
 
 import { Actor, PrismaClient } from "@prisma/client";
+import { ActorPayload } from "../types/Actor";
 
 const prisma = new PrismaClient();
 
@@ -7,12 +8,12 @@ export default class ActorRepository {
 
     constructor() {}
 
-    async list(): Promise<Actor[] | Error> {
+    async list(): Promise<Actor[]> {
         try {
             const actors: Actor[] = await prisma.actor.findMany();
             return actors;
         } catch (err) {
-            return new Error("Error: list() method in ActorRepository failed.");
+            throw new Error("Error: list() method in ActorRepository failed.");
         }
     }
 
@@ -32,7 +33,7 @@ export default class ActorRepository {
         }
     }
 
-    async create(actor: Actor): Promise<Actor | Error> {
+    async create(actor: ActorPayload): Promise<Actor | Error> {
       try {
         const newActor: Actor = await prisma.actor.create({data: actor})
         return newActor;
@@ -41,7 +42,7 @@ export default class ActorRepository {
       }
     }
 
-    async update(actor: Actor): Promise<Actor | Error> {
+    async update(actor: ActorPayload): Promise<Actor | Error> {
       try {
         const updatedActor: Actor = await prisma.actor.update({
           where: { id: actor.id },
