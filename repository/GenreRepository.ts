@@ -1,111 +1,80 @@
-import sqlite3 from "sqlite3";
-import { Genre } from "../types/repository/Genre";
+import { Genre, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export default class GenreRepository {
+    constructor() {}
 
-    private database: sqlite3.Database;
-
-    constructor(database: sqlite3.Database) {
-        this.database = database;
+    async list(): Promise<Genre[] | Error> {
+        try {
+            const genres: Genre[] = await prisma.genre.findMany();
+            return genres;
+        } catch (err) {
+            return new Error("Error: list() method in GenreRepository failed.");
+        }
     }
 
-    list(): Promise<Genre[]> {
-        return new Promise((resolve, reject) => {
-            this.database.all('SELECT * FROM todo', [], (err, rows) => {
-                if (err) {
-                    console.error(err.message);
-                    reject(err);
-                } else {
-                    resolve(
-                        // rows.map((row) => this.decorator(row)),
-                        rows
-                    );
-                }
+    async get(id: number): Promise<Genre | Error> {
+        try {
+            const genre: Genre | null = await prisma.genre.findUnique({
+                where: {
+                    id,
+                },
             });
-        });
+
+            if (!genre) {
+                return new Error(
+                    "Error: get() method in GenreRepository failed."
+                );
+            }
+
+            return genre;
+        } catch (err) {
+            return new Error("Error: get() method in GenreRepository failed.");
+        }
     }
 
-    get(id: number): Promise<Genre> {
-        return new Promise((resolve, reject) => {
-            this.database.get('SELECT * FROM todo WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    console.error(err.message);
-                    reject(err);
-                } else {
-                    resolve(
-                        // this.decorator(row),
-                        row
-                    );
-                }
+    async create(newGenre: Genre): Promise<Genre | Error> {
+        try {
+            const genre: Genre = await prisma.genre.create({ data: newGenre });
+            return genre;
+        } catch (err) {
+            return new Error(
+                "Error: create() method in GenreRepository failed."
+            );
+        }
+    }
+
+    async update(genre: Genre): Promise<Genre | Error> {
+        try {
+            const updatedGenre: Genre = await prisma.genre.update({
+                where: {
+                    id: genre.id,
+                },
+                data: genre,
             });
-        });
-    }
 
-    create(data: Genre): Promise<boolean> {
-        /* return new Promise((resolve, reject) => {
-            this.database.run(
-                'INSERT INTO todo (contents, done) VALUES (?,?)',
-                [data.contents, data.done ? 1 : 0],
-                function (err) {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(this.lastID);
-                    }
-                },
+            return updatedGenre;
+        } catch (err) {
+            return new Error(
+                "Error: update() method in GenreRepository failed."
             );
-        }); */
-        return new Promise((resolve, reject) => {
-            resolve(true);
-        })
+        }
     }
 
-    update(data: Genre) {
-        /* return new Promise((resolve, reject) => {
-            this.database.run(
-                `UPDATE todo
-               SET contents = ?,
-                   done = ?
-               WHERE id = ?`,
-                [data.contents, data.done ? 1 : 0, id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                },
+    async delete(id: number): Promise<Genre | Error> {
+        try {
+            const deletedGenre: Genre = await prisma.genre.delete({
+                where: { id },
+            });
+
+            return deletedGenre;
+        } catch (err) {
+            return new Error(
+                "Error: delete() method in GenreRepository failed."
             );
-        }); */
+        }
     }
-
-    delete(id: number) {
-        return new Promise((resolve, reject) => {
-            this.database.run(
-                `DELETE FROM todo
-               WHERE id = ?`,
-                [id],
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                        reject(err);
-                    } else {
-                        resolve(true);
-                    }
-                },
-            );
-        });
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    /* decorator(todo) {
-        return {
-            ...todo,
-            done: todo.done === 1,
-        };
-    } */
 }
 
 module.exports = GenreRepository;

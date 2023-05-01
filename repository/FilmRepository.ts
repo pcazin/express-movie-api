@@ -57,7 +57,7 @@ export default class FilmRepository {
             return updatedFilm;
         } catch (err) {
             return new Error(
-                "Error: update() method in ActorRepository failed."
+                "Error: update() method in FilmRepository failed."
             );
         }
     }
@@ -71,7 +71,7 @@ export default class FilmRepository {
             return deletedFilm;
         } catch (err) {
             return new Error(
-                "Error: delete() method in ActorRepository failed."
+                "Error: delete() method in FilmRepository failed."
             );
         }
     }
