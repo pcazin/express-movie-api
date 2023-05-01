@@ -9,33 +9,23 @@ export default class FilmRepository {
     }
 
     list() {
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        });
+
     }
 
     get() {
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        });
+
     }
 
     create() {
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        });
+
     }
 
     update() {
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        });
+
     }
 
     delete() {
-        return new Promise((resolve, reject) => {
-            resolve(true)
-        });
+
     }
 }
 

@@ -1,17 +1,11 @@
-import sqlite3 from "sqlite3";
 import { Actor } from "../types/repository/Actor";
-import { PrismaClient, PrismaPromise } from "@prisma/client";
-import { resolve } from "path";
-import { rejects } from "assert";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export default class ActorRepository {
-    private database: sqlite3.Database;
 
-    constructor(database: sqlite3.Database) {
-        this.database = database;
-    }
+    constructor() {}
 
     async list(): Promise<Actor[] | Error> {
         try {
