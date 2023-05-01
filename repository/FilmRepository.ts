@@ -77,4 +77,4 @@ export default class FilmRepository {
     }
 }
 
-module.exports = FilmRepository;
+

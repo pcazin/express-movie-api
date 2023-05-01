@@ -77,4 +77,4 @@ export default class GenreRepository {
     }
 }
 
-module.exports = GenreRepository;
+
