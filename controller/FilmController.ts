@@ -4,7 +4,7 @@ import { FilmPayload } from "../types/Film";
 
 const repo: FilmRepository = new FilmRepository();
 
-const film_list = (req: Request, res: Response) => {
+const film_list = (_req: Request, res: Response) => {
     repo.list()
         .then((result) => {
             res.json(result);

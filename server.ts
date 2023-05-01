@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import actorRoutes from './route/actor';
 import genreRoutes from './route/genre';
 import filmRoutes from './route/film';
-import dbRoutes from './route/db';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,9 +19,6 @@ app.get('/', (req, res) => {
     res.json({ message: 'Hello World' });
 });
 
-// Routes "init db"
-app.use('/api/initDb', dbRoutes)
-
 // Routes "Actor"
 app.use('/api/actor', actorRoutes);
 
@@ -34,5 +30,6 @@ app.use('/api/film', filmRoutes);
 
 // Fallback route
 app.use((_req, res) => {
-    res.status(404);
+    console.log("ping")
+    res.status(200).json({message: "Ping"});
 });

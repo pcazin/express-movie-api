@@ -1,13 +1,15 @@
+import logger from "../helper/log";
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
-import { Actor } from "@prisma/client";
 
 const repo: ActorRepository = new ActorRepository();
 
-const get_actor_list = (req: Request, res: Response) => {
-    -repo
-        .list()
+const get_actor_list = (_req: Request, res: Response) => {
+
+    logger("GET ALL ACTOR", "yellow");
+
+    repo.list()
         .then((result) => {
             res.status(200).json(result);
         })
@@ -27,6 +29,9 @@ const get_actor = (req: Request, res: Response) => {
 };
 
 const create_actor = (req: Request, res: Response) => {
+
+    console.log(req.body);
+
     const errors: String[] = [];
 
     ["first_name", "last_name", "date_of_birth", "date_of_death"].forEach(
@@ -38,7 +43,7 @@ const create_actor = (req: Request, res: Response) => {
     );
 
     if (errors.length) {
-        res.status(500).json(errors);
+        res.status(401).json(errors);
         return;
     }
 

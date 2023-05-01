@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 const repo: GenreRepository = new GenreRepository();
 
-const genre_list = (req: Request, res: Response) => {
+const genre_list = (_req: Request, res: Response) => {
     repo.list()
         .then((result) => {
             res.json(result);
@@ -34,8 +34,7 @@ const genre_create = (req: Request, res: Response) => {
 };
 
 const genre_delete = (req: Request, res: Response) => {
-    repo
-        .delete(Number(req.params.id))
+    repo.delete(Number(req.params.id))
         .then((result) => {
             res.status(204).json(result);
         })

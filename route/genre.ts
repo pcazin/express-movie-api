@@ -9,7 +9,3 @@ router.delete('/:id', genre_delete);
 
 export default router;
 
-// ● GET /genre : retourne la liste des genres
-// ● POST /genre : crée le genre selon les informations du corps de la requête
-// ● DELETE /genre/{id} : supprime le genre (sauf si utilisé dans un ou plusieurs
-// films)

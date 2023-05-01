@@ -22,8 +22,4 @@ router.delete("/:id", delete_actor);
 
 export default router;
 
-// ● GET /actor : retourne la liste des acteurs
-// ● GET /actor/{id} : retourne la fiche de l’acteur portant l’ID indiquée
-// ● POST /actor : crée l’acteur selon les informations du corps de la requête
-// ● PUT /actor/{id} : modifie l’acteur selon les informations du corps de la requête
-// ● DELETE /actor/{id} : supprime l’acteur
+
