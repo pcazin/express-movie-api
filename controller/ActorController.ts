@@ -1,4 +1,3 @@
-import logger, { Logger } from "../helper/log";
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";

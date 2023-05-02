@@ -15,7 +15,7 @@ app.listen(HTTP_PORT, () => {
     console.log(`Server running on port ${HTTP_PORT}`);
 });
 
-// Basic route
+// Route Ping
 app.get('/', (req, res) => {
     logger("MARRON CLAIR", Logger.DELETE);
     logger("VERT CLAIR", Logger.CREATE);
