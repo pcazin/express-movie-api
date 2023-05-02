@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import actorRoutes from './route/actor';
 import genreRoutes from './route/genre';
 import filmRoutes from './route/film';
+import logger, { Logger } from './helper/log';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,7 +17,15 @@ app.listen(HTTP_PORT, () => {
 
 // Basic route
 app.get('/', (req, res) => {
-    res.json({ message: 'Hello World' });
+    logger("MARRON CLAIR", Logger.DELETE);
+    logger("VERT CLAIR", Logger.CREATE);
+    logger("BLEU FONCE", Logger.POST);
+    logger("VIOLET", Logger.GET_ALL);
+    logger("ROSE", Logger.GET);
+    logger("BLEU CLAIR", Logger.PUT);
+    logger("JAUNE", Logger.WARNING);
+    logger("ROUGE", Logger.ERROR);
+    res.json({ message: 'Ping' });
 });
 
 // Routes "Actor"
@@ -30,6 +39,5 @@ app.use('/api/film', filmRoutes);
 
 // Fallback route
 app.use((_req, res) => {
-    console.log("ping")
-    res.status(200).json({message: "Ping"});
+    res.status(200).json({message: "no endpoints detected."});
 });

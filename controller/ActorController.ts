@@ -1,4 +1,4 @@
-import logger from "../helper/log";
+import logger, { Logger } from "../helper/log";
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
@@ -6,8 +6,6 @@ import { Request, Response } from "express";
 const repo: ActorRepository = new ActorRepository();
 
 const get_actor_list = (_req: Request, res: Response) => {
-
-    logger("GET ALL ACTOR", "yellow");
 
     repo.list()
         .then((result) => {
