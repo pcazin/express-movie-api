@@ -4,12 +4,17 @@ import actorRoutes from './route/actor';
 import genreRoutes from './route/genre';
 import filmRoutes from './route/film';
 import logger, { Logger } from './helper/log';
+import { apiKeyAuthentication } from './authentication/apiKeyAuthentication';
 
 const app = express();
+
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(bodyParser.json());
 
 const HTTP_PORT = process.env.PORT || 8000;
+
+app.use(apiKeyAuthentication);
 
 app.listen(HTTP_PORT, () => {
     console.log(`Server running on port ${HTTP_PORT}`);
