@@ -1,3 +1,4 @@
+import logger, { Logger } from "../helper/log";
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
@@ -81,16 +82,17 @@ const update_actor = (req: Request, res: Response) => {
 
     const updatedActor: ActorPayload = {
         id: Number(req.params.id),
-        first_name: req.params.first_name,
-        last_name: req.params.last_name,
-        date_of_birth: new Date(req.params.date_of_birth),
-        date_of_death: new Date(req.params.date_of_death),
+        first_name: req.body["first_name"],
+        last_name: req.body["last_name"],
+        date_of_birth: new Date(req.body["date_of_birth"]),
+        date_of_death: new Date(req.body["date_of_death"]),
     };
 
     repo.update(updatedActor)
         .then((result) => {
             res.json({
-                success: result,
+                success: true,
+                data: result
             });
         })
         .catch((err) => {

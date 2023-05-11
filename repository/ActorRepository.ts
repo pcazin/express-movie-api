@@ -1,6 +1,7 @@
 
 import { Actor, PrismaClient } from "@prisma/client";
 import { ActorPayload } from "../types/Actor";
+import logger, { Logger } from "../helper/log";
 
 const prisma = new PrismaClient();
 
