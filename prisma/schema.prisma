@@ -7,35 +7,35 @@ datasource db {
   url      = "file:../database/database.sqlite"
 }
 
-model Genre {
+model genres {
   id    Int     @id @default(autoincrement())
   name  String
-  films Film[]
+  films films[]
 }
 
-model Actor {
+model actors {
   id            Int      @id @default(autoincrement())
   first_name    String
   last_name     String
   date_of_birth DateTime
   date_of_death DateTime?
-  filmActors    FilmActor[]
+  filmActors    films_actors[]
 }
 
-model Film {
+model films {
   id            Int      @id @default(autoincrement())
   name          String
   synopsis      String
-  release_year  Int?
-  genre         Genre    @relation(fields: [genre_id], references: [id])
+  release_year  Int
+  genre         genres    @relation(fields: [genre_id], references: [id])
   genre_id      Int
-  filmActors    FilmActor[]
+  filmActors    films_actors[]
 }
 
-model FilmActor {
-  film    Film @relation(fields: [filmId], references: [id])
-  filmId Int
-  actor   Actor @relation(fields: [actorId], references: [id])
-  actorId Int
-  @@id([filmId, actorId])
+model films_actors {
+  film    films @relation(fields: [film_id], references: [id])
+  film_id Int
+  actor   actors @relation(fields: [actor_id], references: [id])
+  actor_id Int
+  @@id([film_id, actor_id])
 }
