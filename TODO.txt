@@ -1,4 +1,3 @@
-- gitignore: database, migration
 - s'assurer que la migration générée correspond au modèle de la bdd (nom des tables case-sensitive, nom exacte des columns)
 - Commenter en jsdoc les router
 - Intégrer l'API KEY
