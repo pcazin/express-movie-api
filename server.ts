@@ -5,6 +5,8 @@ import genreRoutes from './route/genre';
 import filmRoutes from './route/film';
 import logger, { Logger } from './helper/log';
 import { apiKeyAuthentication } from './authentication/apiKeyAuthentication';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
@@ -12,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
 
-const HTTP_PORT = process.env.PORT || 8000;
+const HTTP_PORT = process.env.PORT || 3000;
 
 app.use(apiKeyAuthentication);
 
@@ -21,7 +23,7 @@ app.listen(HTTP_PORT, () => {
 });
 
 // Route Ping
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     logger("MARRON CLAIR", Logger.DELETE);
     logger("VERT CLAIR", Logger.CREATE);
     logger("BLEU FONCE", Logger.POST);
