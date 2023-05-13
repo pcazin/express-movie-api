@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
 import { FilmPayload } from "../types/Film";
@@ -17,6 +18,9 @@ const film_list = (_req: Request, res: Response) => {
 const film_get = (req: Request, res: Response) => {
     repo.get(Number(req.params.id))
         .then((result) => {
+            const resultString = JSON.stringify(result)
+            const hash = crypto.createHash('md5').update(resultString).digest("hex");
+            res.set('ETag', hash)
             res.json(result);
         })
         .catch((err) => {

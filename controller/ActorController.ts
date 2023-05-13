@@ -1,4 +1,4 @@
-import logger, { Logger } from "../helper/log";
+import crypto from 'crypto';
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
@@ -19,6 +19,9 @@ const get_actor_list = (_req: Request, res: Response) => {
 const get_actor = (req: Request, res: Response) => {
     repo.get(Number(req.params.id))
         .then((result) => {
+            const resultString = JSON.stringify(result)
+            const hash = crypto.createHash('md5').update(resultString).digest("hex");
+            res.set('ETag', hash)
             res.status(200).json(result);
         })
         .catch((err) => {
