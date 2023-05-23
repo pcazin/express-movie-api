@@ -1,7 +1,6 @@
 
-import { Actor, PrismaClient } from "@prisma/client";
+import { actors, PrismaClient } from "@prisma/client";
 import { ActorPayload } from "../types/Actor";
-import logger, { Logger } from "../helper/log";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +8,7 @@ export default class ActorRepository {
 
     constructor() {}
 
-    async list(): Promise<Actor[]> {
+    async list(): Promise<actors[]> {
         try {
             const actors: Actor[] = await prisma.actor.findMany();
             return actors;

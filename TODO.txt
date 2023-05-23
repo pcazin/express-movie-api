@@ -2,3 +2,5 @@
 - Commenter en jsdoc les router
 - Intégrer l'API KEY
 - inétegrer l'EGATE ( route GET retourne un hash, route PUT/PATCH prends le hash et le compare).
+- seed.ts
+- update le readme

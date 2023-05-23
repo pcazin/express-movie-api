@@ -15,6 +15,7 @@ const genre_list = (_req: Request, res: Response) => {
 };
 
 const genre_create = (req: Request, res: Response) => {
+
     if (!req.body["name"]) {
         res.status(400).json(`Field 'name' is missing from request body`);
         return;
@@ -26,6 +27,7 @@ const genre_create = (req: Request, res: Response) => {
 
     repo.create(newGenre)
         .then((result) => {
+            console.log(result)
             res.status(201).json(result);
         })
         .catch((err) => {

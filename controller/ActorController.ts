@@ -67,6 +67,17 @@ const create_actor = (req: Request, res: Response) => {
 };
 
 const update_actor = (req: Request, res: Response) => {
+
+
+    // check if there is an etag
+        // else return error
+        console.log("ici")
+    console.log(req.get("CC"))
+
+    // check if etag is the same as database actor
+        // elese return error
+
+
     const errors: String[] = [];
     ["first_name", "last_name", "date_of_birth", "date_of_death"].forEach(
         (field) => {
