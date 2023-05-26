@@ -59,8 +59,12 @@ const film_create = async (req: Request, res: Response) => {
         return;
     }
 
+
     repo.create(newFilm)
         .then((result) => {
+            const resultString = JSON.stringify(result)
+            const hash = crypto.createHash('md5').update(resultString).digest("hex");
+            res.set('ETag', hash)
             res.status(201).json(result);
         })
         .catch((err) => {
