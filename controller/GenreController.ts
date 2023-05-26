@@ -1,6 +1,7 @@
 import GenreRepository from "../repository/GenreRepository";
 import { GenrePayLoad } from "../types/Genre";
 import { Request, Response } from "express";
+import { genres } from "@prisma/client";
 
 const repo: GenreRepository = new GenreRepository();
 
@@ -14,16 +15,24 @@ const genre_list = (_req: Request, res: Response) => {
         });
 };
 
-const genre_create = (req: Request, res: Response) => {
+const genre_create = async(req: Request, res: Response) => {
 
     if (!req.body["name"]) {
-        res.status(400).json(`Field 'name' is missing from request body`);
+        res.status(500).json(`Field 'name' is missing from request body`);
         return;
     }
 
     const newGenre: GenrePayLoad = {
         name: req.body.name,
     };
+
+    // verifier que le gnom du genre n'est pas déjà existant
+    const genre: genres | Error = await repo.getByName(newGenre.name);
+
+    if(!(genre instanceof Error)) {
+        res.status(500).json("Ce genre existe déjà");
+        return;
+    }
 
     repo.create(newGenre)
         .then((result) => {
@@ -41,7 +50,7 @@ const genre_delete = (req: Request, res: Response) => {
             res.status(204).json(result);
         })
         .catch((err) => {
-            res.status(400).json({ error: err.message });
+            res.status(500).json({ error: err.message });
         });
 };
 

@@ -15,11 +15,31 @@ export default class GenreRepository {
         }
     }
 
-    async get(id: number): Promise<genres | Error> {
+    async getById(id: number): Promise<genres | Error> {
         try {
             const genre: genres | null = await prisma.genres.findUnique({
                 where: {
                     id,
+                },
+            });
+
+            if (!genre) {
+                return new Error(
+                    "Error: get() method in GenreRepository failed."
+                );
+            }
+
+            return genre;
+        } catch (err) {
+            return new Error("Error: get() method in GenreRepository failed.");
+        }
+    }
+
+    async getByName(name: string): Promise<genres | Error> {
+        try {
+            const genre: genres | null = await prisma.genres.findFirst({
+                where: {
+                    name,
                 },
             });
 

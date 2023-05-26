@@ -1,12 +1,12 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
+import { actors } from "@prisma/client";
 
 const repo: ActorRepository = new ActorRepository();
 
 const get_actor_list = (_req: Request, res: Response) => {
-
     repo.list()
         .then((result) => {
             res.status(200).json(result);
@@ -17,11 +17,14 @@ const get_actor_list = (_req: Request, res: Response) => {
 };
 
 const get_actor = (req: Request, res: Response) => {
-    repo.get(Number(req.params.id))
+    repo.getById(Number(req.params.id))
         .then((result) => {
-            const resultString = JSON.stringify(result)
-            const hash = crypto.createHash('md5').update(resultString).digest("hex");
-            res.set('ETag', hash)
+            const resultString = JSON.stringify(result);
+            const hash = crypto
+                .createHash("md5")
+                .update(resultString)
+                .digest("hex");
+            res.set("ETag", hash);
             res.status(200).json(result);
         })
         .catch((err) => {
@@ -29,8 +32,7 @@ const get_actor = (req: Request, res: Response) => {
         });
 };
 
-const create_actor = (req: Request, res: Response) => {
-
+const create_actor = async (req: Request, res: Response) => {
     console.log(req.body);
 
     const errors: String[] = [];
@@ -44,7 +46,7 @@ const create_actor = (req: Request, res: Response) => {
     );
 
     if (errors.length) {
-        res.status(401).json(errors);
+        res.status(500).json(errors);
         return;
     }
 
@@ -57,6 +59,17 @@ const create_actor = (req: Request, res: Response) => {
             : null,
     };
 
+    //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
+    const actor: actors | Error = await repo.getByName(
+        newActor.first_name,
+        newActor.last_name
+    );
+
+    if (!(actor instanceof Error)) {
+        res.status(500).json("Cet acteur existe déjà");
+        return;
+    }
+
     repo.create(newActor)
         .then((result) => {
             res.status(201).json(result);
@@ -66,17 +79,14 @@ const create_actor = (req: Request, res: Response) => {
         });
 };
 
-const update_actor = (req: Request, res: Response) => {
-
-
+const update_actor = async (req: Request, res: Response) => {
     // check if there is an etag
-        // else return error
-        console.log("ici")
-    console.log(req.get("CC"))
+    // else return error
+    console.log("ici");
+    console.log(req.get("CC"));
 
     // check if etag is the same as database actor
-        // elese return error
-
+    // elese return error
 
     const errors: String[] = [];
     ["first_name", "last_name", "date_of_birth", "date_of_death"].forEach(
@@ -87,7 +97,7 @@ const update_actor = (req: Request, res: Response) => {
         }
     );
     if (errors.length) {
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             errors,
         });
@@ -102,11 +112,28 @@ const update_actor = (req: Request, res: Response) => {
         date_of_death: new Date(req.body["date_of_death"]),
     };
 
+    if(updatedActor.date_of_death != null && updatedActor.date_of_birth >= updatedActor.date_of_death){
+        res.status(500).json("La date de décès est inférieure à la date de naissance");
+    }
+
+    //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
+    const actor: actors | Error = await repo.getByName(
+        updatedActor.first_name,
+        updatedActor.last_name
+    );
+
+    if (!(actor instanceof Error)) {
+        if (actor.id != updatedActor.id) {
+            res.status(500).json("Cet acteur existe déjà");
+            return;
+        }
+    }
+
     repo.update(updatedActor)
         .then((result) => {
             res.json({
                 success: true,
-                data: result
+                data: result,
             });
         })
         .catch((err) => {
