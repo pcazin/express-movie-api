@@ -1,4 +1,4 @@
-import { Film, PrismaClient } from "@prisma/client";
+import { films, PrismaClient } from "@prisma/client";
 import { FilmPayload } from "../types/Film";
 
 const prisma = new PrismaClient();
@@ -6,18 +6,18 @@ const prisma = new PrismaClient();
 export default class FilmRepository {
     constructor() {}
 
-    async list(): Promise<Film[] | Error> {
+    async list(): Promise<films[] | Error> {
         try {
-            const films: Film[] = await prisma.film.findMany();
+            const films: films[] = await prisma.films.findMany();
             return films;
         } catch (err) {
             return new Error("Error: list() method in FilmRepository failed.");
         }
     }
 
-    async get(id: number): Promise<Film | Error> {
+    async get(id: number): Promise<films | Error> {
         try {
-            const film: Film | null = await prisma.film.findUnique({
+            const film: films | null = await prisma.films.findUnique({
                 where: {
                     id: id,
                 },
@@ -35,9 +35,9 @@ export default class FilmRepository {
         }
     }
 
-    async create(newFilm: FilmPayload): Promise<Film | Error> {
+    async create(newFilm: FilmPayload): Promise<films | Error> {
         try {
-            const film: Film = await prisma.film.create({
+            const film: films = await prisma.films.create({
                 data: newFilm,
             });
 
@@ -49,9 +49,9 @@ export default class FilmRepository {
         }
     }
 
-    async update(film: FilmPayload): Promise<Film | Error> {
+    async update(film: FilmPayload): Promise<films | Error> {
         try {
-            const updatedFilm: Film = await prisma.film.update({
+            const updatedFilm: films = await prisma.films.update({
                 where: { id: film.id },
                 data: film,
             });
@@ -63,9 +63,9 @@ export default class FilmRepository {
         }
     }
 
-    async delete(id: number): Promise<Film | Error> {
+    async delete(id: number): Promise<films | Error> {
         try {
-            const deletedFilm: Film = await prisma.film.delete({
+            const deletedFilm: films = await prisma.films.delete({
                 where: { id },
             });
 

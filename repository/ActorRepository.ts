@@ -10,16 +10,16 @@ export default class ActorRepository {
 
     async list(): Promise<actors[]> {
         try {
-            const actors: Actor[] = await prisma.actor.findMany();
+            const actors: actors[] = await prisma.actors.findMany();
             return actors;
         } catch (err) {
             throw new Error("Error: list() method in ActorRepository failed.");
         }
     }
 
-    async get(id: number): Promise<Actor | Error> {
+    async get(id: number): Promise<actors | Error> {
         try {
-            const actor: Actor | null = await prisma.actor.findUnique({ where: { id } });
+            const actor: actors | null = await prisma.actors.findUnique({ where: { id } });
 
             if (!actor) {
                 return new Error(
@@ -33,18 +33,18 @@ export default class ActorRepository {
         }
     }
 
-    async create(actor: ActorPayload): Promise<Actor | Error> {
+    async create(actor: ActorPayload): Promise<actors | Error> {
       try {
-        const newActor: Actor = await prisma.actor.create({data: actor})
+        const newActor: actors = await prisma.actors.create({data: actor})
         return newActor;
       } catch(err) {
         return new Error("Error: create() method in ActorRepository failed.");
       }
     }
 
-    async update(actor: ActorPayload): Promise<Actor | Error> {
+    async update(actor: ActorPayload): Promise<actors | Error> {
       try {
-        const updatedActor: Actor = await prisma.actor.update({
+        const updatedActor: actors = await prisma.actors.update({
           where: { id: actor.id },
           data: actor
         })
@@ -54,9 +54,9 @@ export default class ActorRepository {
       }
     }
 
-    async delete(id: number): Promise<Actor | Error> {
+    async delete(id: number): Promise<actors | Error> {
       try {
-        const deletedActor: Actor = await prisma.actor.delete({
+        const deletedActor: actors = await prisma.actors.delete({
           where: { id }
         })
         return deletedActor;

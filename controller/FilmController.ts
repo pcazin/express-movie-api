@@ -2,8 +2,11 @@ import crypto from 'crypto';
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
 import { FilmPayload } from "../types/Film";
+import { genres } from "@prisma/client";
+import GenreRepository from '../repository/GenreRepository';
 
 const repo: FilmRepository = new FilmRepository();
+const repoGenre : GenreRepository = new GenreRepository();
 
 const film_list = (_req: Request, res: Response) => {
     repo.list()
@@ -28,7 +31,7 @@ const film_get = (req: Request, res: Response) => {
         });
 };
 
-const film_create = (req: Request, res: Response) => {
+const film_create = async (req: Request, res: Response) => {
     const errors: String[] = [];
     ["name", "synopsis", "release_year", "genre_id"].forEach((field) => {
         if (!req.body[field]) {
@@ -47,6 +50,14 @@ const film_create = (req: Request, res: Response) => {
         release_year: Number(req.body["release_year"]),
         genre_id: Number(req.body["genre_id"]),
     };
+
+    // verifier que le genre existe
+    const genre: Error | genres = await repoGenre.get(newFilm.genre_id);
+
+    if(genre instanceof Error) {
+        res.status(400).json("L'id fournis pour le genre n'existe pas.");
+        return;
+    }
 
     repo.create(newFilm)
         .then((result) => {

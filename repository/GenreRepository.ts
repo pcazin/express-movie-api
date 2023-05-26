@@ -1,4 +1,4 @@
-import { Genre, PrismaClient } from "@prisma/client";
+import { genres, PrismaClient } from "@prisma/client";
 import { GenrePayLoad } from "../types/Genre";
 
 const prisma = new PrismaClient();
@@ -6,18 +6,18 @@ const prisma = new PrismaClient();
 export default class GenreRepository {
     constructor() {}
 
-    async list(): Promise<Genre[] | Error> {
+    async list(): Promise<genres[] | Error> {
         try {
-            const genres: Genre[] = await prisma.genre.findMany();
+            const genres: genres[] = await prisma.genres.findMany();
             return genres;
         } catch (err) {
             return new Error("Error: list() method in GenreRepository failed.");
         }
     }
 
-    async get(id: number): Promise<Genre | Error> {
+    async get(id: number): Promise<genres | Error> {
         try {
-            const genre: Genre | null = await prisma.genre.findUnique({
+            const genre: genres | null = await prisma.genres.findUnique({
                 where: {
                     id,
                 },
@@ -35,9 +35,9 @@ export default class GenreRepository {
         }
     }
 
-    async create(newGenre: GenrePayLoad): Promise<Genre | Error> {
+    async create(newGenre: GenrePayLoad): Promise<genres | Error> {
         try {
-            const genre: Genre = await prisma.genre.create({ data: newGenre });
+            const genre: genres = await prisma.genres.create({ data: newGenre });
             return genre;
         } catch (err) {
             return new Error(
@@ -46,9 +46,9 @@ export default class GenreRepository {
         }
     }
 
-    async update(genre: Genre): Promise<Genre | Error> {
+    async update(genre: genres): Promise<genres | Error> {
         try {
-            const updatedGenre: Genre = await prisma.genre.update({
+            const updatedGenre: genres = await prisma.genres.update({
                 where: {
                     id: genre.id,
                 },
@@ -63,9 +63,9 @@ export default class GenreRepository {
         }
     }
 
-    async delete(id: number): Promise<Genre | Error> {
+    async delete(id: number): Promise<genres | Error> {
         try {
-            const deletedGenre: Genre = await prisma.genre.delete({
+            const deletedGenre: genres = await prisma.genres.delete({
                 where: { id },
             });
 
