@@ -15,11 +15,31 @@ export default class FilmRepository {
         }
     }
 
-    async get(id: number): Promise<films | Error> {
+    async getById(id: number): Promise<films | Error> {
         try {
             const film: films | null = await prisma.films.findUnique({
                 where: {
                     id: id,
+                },
+            });
+
+            if (!film) {
+                return new Error(
+                    "Error: get() method in FilmRepository failed."
+                );
+            }
+
+            return film;
+        } catch (err) {
+            return new Error("Error: get() method in FilmRepository failed.");
+        }
+    }
+
+    async getByName(name: string): Promise<films | Error> {
+        try {
+            const film: films | null = await prisma.films.findFirst({
+                where: {
+                    name: name,
                 },
             });
 

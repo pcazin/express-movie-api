@@ -1,14 +1,13 @@
-import crypto from 'crypto';
 import ActorRepository from "../repository/ActorRepository";
 import { ActorPayload } from "../types/Actor";
 import { Request, Response } from "express";
 import { actors } from '@prisma/client';
 import getMd5Hash from '../helper/hash';
 
+
 const repo: ActorRepository = new ActorRepository();
 
 const get_actor_list = (_req: Request, res: Response) => {
-
     repo.list()
         .then((result) => {
             res.status(200).json(result);
@@ -19,7 +18,7 @@ const get_actor_list = (_req: Request, res: Response) => {
 };
 
 const get_actor = (req: Request, res: Response) => {
-    repo.get(Number(req.params.id))
+    repo.getById(Number(req.params.id))
         .then((result) => {
             res.set('ETag', getMd5Hash(result))
             res.status(200).json(result);
@@ -29,8 +28,7 @@ const get_actor = (req: Request, res: Response) => {
         });
 };
 
-const create_actor = (req: Request, res: Response) => {
-
+const create_actor = async (req: Request, res: Response) => {
     console.log(req.body);
 
     const errors: String[] = [];
@@ -44,7 +42,7 @@ const create_actor = (req: Request, res: Response) => {
     );
 
     if (errors.length) {
-        res.status(401).json(errors);
+        res.status(500).json(errors);
         return;
     }
 
@@ -56,6 +54,17 @@ const create_actor = (req: Request, res: Response) => {
             ? new Date(req.body["date_of_death"])
             : null,
     };
+
+    //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
+    const actor: actors | Error = await repo.getByName(
+        newActor.first_name,
+        newActor.last_name
+    );
+
+    if (!(actor instanceof Error)) {
+        res.status(500).json("Cet acteur existe déjà");
+        return;
+    }
 
     repo.create(newActor)
         .then((result) => {
@@ -79,7 +88,7 @@ const update_actor = async (req: Request, res: Response) => {
     }
 
     // je verifie si le ETag correspond 
-    const oldActor: actors | Error = await repo.get(Number(req.params.id))
+    const oldActor: actors | Error = await repo.getById(Number(req.params.id))
 
     if(oldActor instanceof Error) {
         res.status(500).json({
@@ -108,7 +117,7 @@ const update_actor = async (req: Request, res: Response) => {
         }
     );
     if (errors.length) {
-        res.status(400).json({
+        res.status(500).json({
             success: false,
             errors,
         });
@@ -123,11 +132,28 @@ const update_actor = async (req: Request, res: Response) => {
         date_of_death: new Date(req.body["date_of_death"]),
     };
 
+    if(updatedActor.date_of_death != null && updatedActor.date_of_birth >= updatedActor.date_of_death){
+        res.status(500).json("La date de décès est inférieure à la date de naissance");
+    }
+
+    //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
+    const actor: actors | Error = await repo.getByName(
+        updatedActor.first_name,
+        updatedActor.last_name
+    );
+
+    if (!(actor instanceof Error)) {
+        if (actor.id != updatedActor.id) {
+            res.status(500).json("Cet acteur existe déjà");
+            return;
+        }
+    }
+
     repo.update(updatedActor)
         .then((result) => {
             res.json({
                 success: true,
-                data: result
+                data: result,
             });
             return;
         })

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
 import { FilmPayload } from "../types/Film";
-import { genres } from "@prisma/client";
+import { genres, films } from "@prisma/client";
 import GenreRepository from '../repository/GenreRepository';
 
 const repo: FilmRepository = new FilmRepository();
@@ -19,7 +19,7 @@ const film_list = (_req: Request, res: Response) => {
 };
 
 const film_get = (req: Request, res: Response) => {
-    repo.get(Number(req.params.id))
+    repo.getById(Number(req.params.id))
         .then((result) => {
             const resultString = JSON.stringify(result)
             const hash = crypto.createHash('md5').update(resultString).digest("hex");
@@ -40,7 +40,7 @@ const film_create = async (req: Request, res: Response) => {
     });
 
     if (errors.length) {
-        res.status(400).json(errors);
+        res.status(500).json(errors);
         return;
     }
 
@@ -52,10 +52,18 @@ const film_create = async (req: Request, res: Response) => {
     };
 
     // verifier que le genre existe
-    const genre: Error | genres = await repoGenre.get(newFilm.genre_id);
+    const genre: Error | genres = await repoGenre.getById(newFilm.genre_id);
 
     if(genre instanceof Error) {
-        res.status(400).json("L'id fournis pour le genre n'existe pas.");
+        res.status(500).json("L'id fournis pour le genre n'existe pas.");
+        return;
+    }
+
+    // verifier que le nom n'est pas déjà utiliser pour un autre film
+    const film: films | Error = await repo.getByName(newFilm.name);
+
+    if(!(film instanceof Error)){
+        res.status(500).json("Un film possède déjà ce nom");
         return;
     }
 
@@ -72,7 +80,7 @@ const film_create = async (req: Request, res: Response) => {
         });
 };
 
-const film_update = (req: Request, res: Response) => {
+const film_update = async (req: Request, res: Response) => {
     const errors: String[] = [];
     ["name", "synopsis", "release_year", "genre_id"].forEach((field) => {
         if (!req.body[field]) {
@@ -80,7 +88,7 @@ const film_update = (req: Request, res: Response) => {
         }
     });
     if (errors.length) {
-        res.status(400).json(errors);
+        res.status(500).json(errors);
         return;
     }
 
@@ -92,12 +100,29 @@ const film_update = (req: Request, res: Response) => {
         genre_id: Number(req.body["genre_id"]),
     };
 
+    // verifier que le genre existe
+    const genre: Error | genres = await repoGenre.getById(updatedFilm.genre_id);
+
+    if(genre instanceof Error) {
+        res.status(500).json("L'id fournis pour le genre n'existe pas.");
+        return;
+    }
+    // verifier que le nom n'est pas déjà utiliser pour un autre film
+    const film: Error | films = await repo.getByName(updatedFilm.name);
+
+    if(!(film instanceof Error)){
+        if(film.id != updatedFilm.id) {
+            res.status(500).json("Un film avec la même nom existe déjà");
+            return;
+        }
+    }
+
     repo.update(updatedFilm)
         .then((result) => {
             res.status(200).json(result);
         })
         .catch((err) => {
-            res.status(400).json({ error: err.message });
+            res.status(500).json({ error: err.message });
         });
 };
 
@@ -109,7 +134,7 @@ const film_delete = (req: Request, res: Response) => {
             });
         })
         .catch((err) => {
-            res.status(400).json({ error: err.message });
+            res.status(500).json({ error: err.message });
         });
 };
 
