@@ -1,3 +1,4 @@
 - s'assurer que la migration générée correspond au modèle de la bdd (nom des tables case-sensitive, nom exacte des columns)
 - Commenter en jsdoc les router
 - tester toutes les routes et edge case.
+- mettre les loggers pour chaque action.
