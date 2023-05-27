@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 // Create a new genre entity
 async function createGenre() {
-    const genre = await prisma.genre.create({
+    const genre = await prisma.genres.create({
         data: {
             name: "Action",
         },
@@ -14,7 +14,7 @@ async function createGenre() {
 
 // Create a new actor entity
 async function createActor() {
-    const actor = await prisma.actor.create({
+    const actor = await prisma.actors.create({
         data: {
             first_name: "Arnold",
             last_name: "Schwarzenegger",
@@ -26,7 +26,7 @@ async function createActor() {
 
 // Create a new film entity
 async function createFilm() {
-    const film = await prisma.film.create({
+    const film = await prisma.films.create({
         data: {
             name: "Terminator 2: Judgment Day",
             synopsis:
@@ -42,7 +42,7 @@ async function createFilm() {
 
 // Create a new filmActor entity
 async function createFilmActor() {
-    const filmActor = await prisma.filmActor.create({
+    const filmActor = await prisma.films_actors.create({
         data: {
             film: {
                 connect: { id: 1 },
@@ -53,7 +53,7 @@ async function createFilmActor() {
         },
     });
     console.log(
-        `Created default data for film_actor: actor_id = ${filmActor.actorId} - film_id = ${filmActor.filmId}`
+        `Created default data for film_actor: actor_id = ${filmActor.actor_id} - film_id = ${filmActor.film_id}`
     );
 }
 
