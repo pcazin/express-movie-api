@@ -1,12 +1,13 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 import { Request, Response } from "express";
 import FilmRepository from "../repository/FilmRepository";
 import { FilmPayload } from "../types/Film";
 import { genres, films } from "@prisma/client";
-import GenreRepository from '../repository/GenreRepository';
+import GenreRepository from "../repository/GenreRepository";
+import getMd5Hash from "../helper/hash";
 
 const repo: FilmRepository = new FilmRepository();
-const repoGenre : GenreRepository = new GenreRepository();
+const repoGenre: GenreRepository = new GenreRepository();
 
 const film_list = (_req: Request, res: Response) => {
     repo.list()
@@ -21,9 +22,12 @@ const film_list = (_req: Request, res: Response) => {
 const film_get = (req: Request, res: Response) => {
     repo.getById(Number(req.params.id))
         .then((result) => {
-            const resultString = JSON.stringify(result)
-            const hash = crypto.createHash('md5').update(resultString).digest("hex");
-            res.set('ETag', hash)
+            const resultString = JSON.stringify(result);
+            const hash = crypto
+                .createHash("md5")
+                .update(resultString)
+                .digest("hex");
+            res.set("ETag", hash);
             res.json(result);
         })
         .catch((err) => {
@@ -54,7 +58,7 @@ const film_create = async (req: Request, res: Response) => {
     // verifier que le genre existe
     const genre: Error | genres = await repoGenre.getById(newFilm.genre_id);
 
-    if(genre instanceof Error) {
+    if (genre instanceof Error) {
         res.status(500).json("L'id fournis pour le genre n'existe pas.");
         return;
     }
@@ -62,17 +66,14 @@ const film_create = async (req: Request, res: Response) => {
     // verifier que le nom n'est pas déjà utiliser pour un autre film
     const film: films | Error = await repo.getByName(newFilm.name);
 
-    if(!(film instanceof Error)){
+    if (!(film instanceof Error)) {
         res.status(500).json("Un film possède déjà ce nom");
         return;
     }
 
-
     repo.create(newFilm)
         .then((result) => {
-            const resultString = JSON.stringify(result)
-            const hash = crypto.createHash('md5').update(resultString).digest("hex");
-            res.set('ETag', hash)
+            res.set("ETag", getMd5Hash(result));
             res.status(201).json(result);
         })
         .catch((err) => {
@@ -81,6 +82,38 @@ const film_create = async (req: Request, res: Response) => {
 };
 
 const film_update = async (req: Request, res: Response) => {
+
+
+    // je verifie si le ETag est dans le header de la requete.
+    if(req.get("ETag") == undefined) {
+        res.status(401).json({
+            success: false,
+            message: "No ETag found on request headers.",
+        })
+        return;
+    }
+
+    // je verifie si le ETag correspond 
+    const oldFilm: films | Error = await repo.getById(Number(req.params.id))
+
+    if(oldFilm instanceof Error) {
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong.",
+        })
+        return;
+    }
+
+    const oldActorhash: string = getMd5Hash(oldFilm);
+
+    if(oldActorhash !== req.get("ETag")) {
+        res.status(401).json({
+            success: false,
+            message: "Invalid ETag",
+        })
+        return;
+    }
+
     const errors: String[] = [];
     ["name", "synopsis", "release_year", "genre_id"].forEach((field) => {
         if (!req.body[field]) {
@@ -100,18 +133,11 @@ const film_update = async (req: Request, res: Response) => {
         genre_id: Number(req.body["genre_id"]),
     };
 
-    // verifier que le genre existe
-    const genre: Error | genres = await repoGenre.getById(updatedFilm.genre_id);
-
-    if(genre instanceof Error) {
-        res.status(500).json("L'id fournis pour le genre n'existe pas.");
-        return;
-    }
     // verifier que le nom n'est pas déjà utiliser pour un autre film
     const film: Error | films = await repo.getByName(updatedFilm.name);
 
-    if(!(film instanceof Error)){
-        if(film.id != updatedFilm.id) {
+    if (!(film instanceof Error)) {
+        if (film.id != updatedFilm.id) {
             res.status(500).json("Un film avec la même nom existe déjà");
             return;
         }
@@ -119,6 +145,7 @@ const film_update = async (req: Request, res: Response) => {
 
     repo.update(updatedFilm)
         .then((result) => {
+            res.set("ETag", getMd5Hash(result));
             res.status(200).json(result);
         })
         .catch((err) => {
@@ -139,5 +166,3 @@ const film_delete = (req: Request, res: Response) => {
 };
 
 export { film_list, film_get, film_create, film_update, film_delete };
-
-

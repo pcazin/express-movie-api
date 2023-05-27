@@ -29,7 +29,6 @@ const get_actor = (req: Request, res: Response) => {
 };
 
 const create_actor = async (req: Request, res: Response) => {
-    console.log(req.body);
 
     const errors: String[] = [];
 
@@ -151,6 +150,7 @@ const update_actor = async (req: Request, res: Response) => {
 
     repo.update(updatedActor)
         .then((result) => {
+            res.set("ETag", getMd5Hash(result))
             res.json({
                 success: true,
                 data: result,
