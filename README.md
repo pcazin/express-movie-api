@@ -1,7 +1,6 @@
 # Movie API documentation
 
 ## Stack
-  - Node
   - Express
   - Typescript
   - Prisma
@@ -12,6 +11,13 @@
 
 1) git pull https://github.com/pcazin/express-movie-api
 
-2) npx prisma migrate dev
+2) npx prisma generate
 
-3) npm run start
+Hint: In case imports from prisma clients are not available, re-install prisma packages and reload your text editor.
+
+  - npm install @prisma/client
+  - npm install prisma --save-dev
+
+3) npx prisma migrate dev
+
+4) npm run start
