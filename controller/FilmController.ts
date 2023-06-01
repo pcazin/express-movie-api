@@ -12,10 +12,10 @@ const repoGenre: GenreRepository = new GenreRepository();
 const film_list = (_req: Request, res: Response) => {
     repo.list()
         .then((result) => {
-            res.json(result);
+            res.status(200).json({success: true, result});
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({success: false, error: err.message });
         });
 };
 
@@ -28,10 +28,10 @@ const film_get = (req: Request, res: Response) => {
                 .update(resultString)
                 .digest("hex");
             res.set("ETag", hash);
-            res.json(result);
+            res.status(200).json({success: true, result});
         })
         .catch((err) => {
-            res.status(404).json({ error: err.message });
+            res.status(404).json({sucess: false, error: err.message });
         });
 };
 
@@ -44,7 +44,7 @@ const film_create = async (req: Request, res: Response) => {
     });
 
     if (errors.length) {
-        res.status(500).json(errors);
+        res.status(400).json({sucess: false, errors});
         return;
     }
 
@@ -59,7 +59,7 @@ const film_create = async (req: Request, res: Response) => {
     const genre: Error | genres = await repoGenre.getById(newFilm.genre_id);
 
     if (genre instanceof Error) {
-        res.status(500).json("L'id fournis pour le genre n'existe pas.");
+        res.status(404).json({sucess: false, error: "L'id fournis pour le genre n'existe pas."});
         return;
     }
 
@@ -67,17 +67,17 @@ const film_create = async (req: Request, res: Response) => {
     const film: films | Error = await repo.getByName(newFilm.name);
 
     if (!(film instanceof Error)) {
-        res.status(500).json("Un film possède déjà ce nom");
+        res.status(400).json({sucess: false, error: "Un film possède déjà ce nom"});
         return;
     }
 
     repo.create(newFilm)
         .then((result) => {
             res.set("ETag", getMd5Hash(result));
-            res.status(201).json(result);
+            res.status(201).json({sucess: true, result});
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({sucess: false, error: err.message });
         });
 };
 
@@ -86,9 +86,9 @@ const film_update = async (req: Request, res: Response) => {
 
     // je verifie si le ETag est dans le header de la requete.
     if(req.get("ETag") == undefined) {
-        res.status(401).json({
+        res.status(400).json({
             success: false,
-            message: "No ETag found on request headers.",
+            error: "No ETag found on request headers.",
         })
         return;
     }
@@ -97,9 +97,9 @@ const film_update = async (req: Request, res: Response) => {
     const oldFilm: films | Error = await repo.getById(Number(req.params.id))
 
     if(oldFilm instanceof Error) {
-        res.status(500).json({
+        res.status(404).json({
             success: false,
-            message: "Something went wrong.",
+            error: "L'id ne correspond à aucune donnée",
         })
         return;
     }
@@ -109,7 +109,7 @@ const film_update = async (req: Request, res: Response) => {
     if(oldActorhash !== req.get("ETag")) {
         res.status(401).json({
             success: false,
-            message: "Invalid ETag",
+            error: "Invalid ETag",
         })
         return;
     }
@@ -121,7 +121,7 @@ const film_update = async (req: Request, res: Response) => {
         }
     });
     if (errors.length) {
-        res.status(500).json(errors);
+        res.status(400).json({sucess: false, errors});
         return;
     }
 
@@ -138,7 +138,7 @@ const film_update = async (req: Request, res: Response) => {
 
     if (!(film instanceof Error)) {
         if (film.id != updatedFilm.id) {
-            res.status(500).json("Un film avec la même nom existe déjà");
+            res.status(400).json({sucess: false, error: "Un film avec la même nom existe déjà"});
             return;
         }
     }
@@ -146,22 +146,33 @@ const film_update = async (req: Request, res: Response) => {
     repo.update(updatedFilm)
         .then((result) => {
             res.set("ETag", getMd5Hash(result));
-            res.status(200).json(result);
+            res.status(200).json({sucess: true, data: result});
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({sucess: false, error: err.message });
         });
 };
 
-const film_delete = (req: Request, res: Response) => {
+const film_delete = async (req: Request, res: Response) => {
+
+    const film: films | Error = await repo.getById(Number(req.params.id))
+    
+    if(film instanceof Error) {
+        res.status(404).json({
+            success: false,
+            error: "L'id ne correspond à aucune donnée",
+        })
+        return;
+    }
+
     repo.delete(Number(req.params.id))
         .then(() => {
-            res.status(204).json({
+            res.status(200).json({
                 success: true,
             });
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({sucess: false, error: err.message });
         });
 };
 

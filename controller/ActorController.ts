@@ -10,10 +10,10 @@ const repo: ActorRepository = new ActorRepository();
 const get_actor_list = (_req: Request, res: Response) => {
     repo.list()
         .then((result) => {
-            res.status(200).json(result);
+            res.status(200).json({success: true, result});
         })
         .catch((err) => {
-            res.status(500).send({ error: err.message });
+            res.status(500).json({success: false, error: err.message });
         });
 };
 
@@ -21,10 +21,10 @@ const get_actor = (req: Request, res: Response) => {
     repo.getById(Number(req.params.id))
         .then((result) => {
             res.set('ETag', getMd5Hash(result))
-            res.status(200).json(result);
+            res.status(200).json({success: true, result});
         })
         .catch((err) => {
-            res.status(500).send({ error: err.message });
+            res.status(404).json({success: false, error: err.message });
         });
 };
 
@@ -41,7 +41,7 @@ const create_actor = async (req: Request, res: Response) => {
     );
 
     if (errors.length) {
-        res.status(500).json(errors);
+        res.status(400).json({success: false, errors});
         return;
     }
 
@@ -54,6 +54,11 @@ const create_actor = async (req: Request, res: Response) => {
             : null,
     };
 
+    if(newActor.date_of_death != null && newActor.date_of_birth >= newActor.date_of_death){
+        res.status(400).json({success: false, error: "La date de décès est inférieure à la date de naissance"});
+        return
+    }
+
     //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
     const actor: actors | Error = await repo.getByName(
         newActor.first_name,
@@ -61,17 +66,17 @@ const create_actor = async (req: Request, res: Response) => {
     );
 
     if (!(actor instanceof Error)) {
-        res.status(500).json("Cet acteur existe déjà");
+        res.status(400).json({success: false, error: "Cet acteur existe déjà"});
         return;
     }
 
     repo.create(newActor)
         .then((result) => {
             res.set('ETag', getMd5Hash(result))
-            res.status(201).json(result);
+            res.status(201).json({success: true, result});
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({success: false, error: err.message });
         });
 };
 
@@ -79,9 +84,9 @@ const update_actor = async (req: Request, res: Response) => {
 
     // je verifie si le ETag est dans le header de la requete.
     if(req.get("ETag") == undefined) {
-        res.status(401).json({
+        res.status(400).json({
             success: false,
-            message: "No ETag found on request headers.",
+            error: "No ETag found on request headers.",
         })
         return;
     }
@@ -90,9 +95,9 @@ const update_actor = async (req: Request, res: Response) => {
     const oldActor: actors | Error = await repo.getById(Number(req.params.id))
 
     if(oldActor instanceof Error) {
-        res.status(500).json({
+        res.status(404).json({
             success: false,
-            message: "Something went wrong.",
+            error: "L'id ne correspond à aucune donnée",
         })
         return;
     }
@@ -102,7 +107,7 @@ const update_actor = async (req: Request, res: Response) => {
     if(oldActorhash !== req.get("ETag")) {
         res.status(401).json({
             success: false,
-            message: "Invalid ETag",
+            error: "Invalid ETag",
         })
         return;
     }
@@ -116,7 +121,7 @@ const update_actor = async (req: Request, res: Response) => {
         }
     );
     if (errors.length) {
-        res.status(500).json({
+        res.status(400).json({
             success: false,
             errors,
         });
@@ -132,7 +137,8 @@ const update_actor = async (req: Request, res: Response) => {
     };
 
     if(updatedActor.date_of_death != null && updatedActor.date_of_birth >= updatedActor.date_of_death){
-        res.status(500).json("La date de décès est inférieure à la date de naissance");
+        res.status(400).json({success: false, error: "La date de décès est inférieure à la date de naissance"});
+        return
     }
 
     //Vérifier qu'un acteur ne possède pas déjà ce nom et ce prénom
@@ -143,7 +149,7 @@ const update_actor = async (req: Request, res: Response) => {
 
     if (!(actor instanceof Error)) {
         if (actor.id != updatedActor.id) {
-            res.status(500).json("Cet acteur existe déjà");
+            res.status(400).json({success: false, error: "Cet acteur existe déjà"});
             return;
         }
     }
@@ -151,26 +157,37 @@ const update_actor = async (req: Request, res: Response) => {
     repo.update(updatedActor)
         .then((result) => {
             res.set("ETag", getMd5Hash(result))
-            res.json({
+            res.status(200).json({
                 success: true,
                 data: result,
             });
             return;
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({success: false, error: err.message });
         });
 };
 
-const delete_actor = (req: Request, res: Response) => {
+const delete_actor = async (req: Request, res: Response) => {
+
+    const actor: actors | Error = await repo.getById(Number(req.params.id))
+    
+    if(actor instanceof Error) {
+        res.status(404).json({
+            success: false,
+            error: "L'id ne correspond à aucune donnée",
+        })
+        return;
+    }
+    
     repo.delete(Number(req.params.id))
         .then(() => {
-            res.status(204).json({
+            res.status(200).json({
                 success: true,
             });
         })
         .catch((err) => {
-            res.status(500).json({ error: err.message });
+            res.status(500).json({success: false, error: err.message });
         });
 };
 
