@@ -1,9 +1,11 @@
 import GenreRepository from "../repository/GenreRepository";
 import { GenrePayLoad } from "../types/Genre";
 import { Request, Response } from "express";
-import { genres } from "@prisma/client";
+import { genres, films } from "@prisma/client";
+import FilmRepository from "../repository/FilmRepository";
 
 const repo: GenreRepository = new GenreRepository();
+const repoFilm: FilmRepository = new FilmRepository();
 
 const genre_list = (_req: Request, res: Response) => {
     repo.list()
@@ -52,6 +54,16 @@ const genre_delete = async (req: Request, res: Response) => {
         res.status(404).json({
             success: false,
             error: "L'id ne correspond à aucune donnée",
+        })
+        return;
+    }
+
+    const films: films[] | Error = await repoFilm.getByGenreId(genre.id);
+
+    if(films instanceof Error || films.length > 0) {
+        res.status(400).json({
+            success: false,
+            error: "Ce genre est utilisé dans un ou plusieurs films",
         })
         return;
     }

@@ -55,6 +55,20 @@ export default class FilmRepository {
         }
     }
 
+    async getByGenreId(id: number): Promise<films[] | Error> {
+        try {
+            const films: films[] = await prisma.films.findMany({
+                where: {
+                    genre_id: id
+                },
+            });
+
+            return films;
+        } catch (err) {
+            return new Error("Error: get() method in FilmRepository failed.");
+        }
+    }
+
     async create(newFilm: FilmPayload): Promise<films | Error> {
         try {
             const film: films = await prisma.films.create({
