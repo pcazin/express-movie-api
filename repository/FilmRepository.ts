@@ -8,7 +8,20 @@ export default class FilmRepository {
 
     async list(): Promise<films[] | Error> {
         try {
-            const films: films[] = await prisma.films.findMany();
+            const films: films[] = await prisma.films.findMany({
+                include: {
+                    genre: {
+                        select: {
+                            name: true,
+                        }
+                    },
+                    filmActors: {
+                        select: {
+                            actor: true,
+                        },
+                    },
+                },
+            });
             return films;
         } catch (err) {
             return new Error("Error: list() method in FilmRepository failed.");
@@ -20,6 +33,18 @@ export default class FilmRepository {
             const film: films | null = await prisma.films.findUnique({
                 where: {
                     id: id,
+                },
+                include: {
+                    genre: {
+                        select: {
+                            name: true,
+                        }
+                    },
+                    filmActors: {
+                        select: {
+                            actor: true,
+                        },
+                    },
                 },
             });
 
@@ -72,7 +97,17 @@ export default class FilmRepository {
     async create(newFilm: FilmPayload): Promise<films | Error> {
         try {
             const film: films = await prisma.films.create({
-                data: newFilm,
+                data: {
+                    name: newFilm.name,
+                    synopsis: newFilm.synopsis,
+                    release_year: newFilm.release_year,
+                    genre_id: newFilm.genre_id,
+                    filmActors: {
+                        create: newFilm.actors_id.map((actorId: number) => ({
+                            actor: { connect: { id: actorId } }
+                        }))
+                    }
+                },
             });
 
             return film;
@@ -87,7 +122,17 @@ export default class FilmRepository {
         try {
             const updatedFilm: films = await prisma.films.update({
                 where: { id: film.id },
-                data: film,
+                data: {
+                    name: film.name,
+                    synopsis: film.synopsis,
+                    release_year: film.release_year,
+                    genre_id: film.genre_id,
+                    filmActors: {
+                        create: film.actors_id.map((actorId: number) => ({
+                            actor: { connect: { id: actorId } }
+                        }))
+                    }
+                },
             });
             return updatedFilm;
         } catch (err) {

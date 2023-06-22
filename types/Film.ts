@@ -4,5 +4,6 @@ export type FilmPayload = {
     synopsis: string,
     release_year: number,
     genre_id: number,
+    actors_id: number[]
 }
 
