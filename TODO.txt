@@ -1,3 +1,0 @@
-- s'assurer que la migration générée correspond au modèle de la bdd (nom des tables case-sensitive, nom exacte des columns)
-- tester toutes les routes et edge case.
-

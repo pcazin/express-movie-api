@@ -9,17 +9,19 @@
 
 ## Installation
 
-1) git pull https://github.com/pcazin/express-movie-api
+1) git clone https://github.com/pcazin/express-movie-api
 
-2) npx prisma generate
+2) npm install
+
+3) npx prisma generate
 
 Hint: In case imports from prisma clients are not available, re-install prisma packages and reload your text editor.
 
   - npm install @prisma/client
   - npm install prisma --save-dev
 
-3) npx prisma migrate dev
+4) npx prisma migrate dev
 
-3) Update .env variables with your port and API KEY.
+5) Update .env variables with your port and API KEY.
 
-5) npm run start
+6) npm run start
