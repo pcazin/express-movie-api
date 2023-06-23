@@ -83,7 +83,7 @@ const create_actor = async (req: Request, res: Response) => {
 const update_actor = async (req: Request, res: Response) => {
 
     // je verifie si le ETag est dans le header de la requete.
-    if(req.get("ETag") == undefined) {
+    if(req.get("if-match") == undefined) {
         res.status(400).json({
             success: false,
             error: "No ETag found on request headers.",
@@ -104,7 +104,7 @@ const update_actor = async (req: Request, res: Response) => {
 
     const oldActorhash: string = getMd5Hash(oldActor);
 
-    if(oldActorhash !== req.get("ETag")) {
+    if(oldActorhash !== req.get("if-match")) {
         res.status(401).json({
             success: false,
             error: "Invalid ETag",
